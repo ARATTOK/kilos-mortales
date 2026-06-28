@@ -185,17 +185,18 @@ async function addWeightEntry(participantId, weightLbs, waistCm, bodyFatPct, act
     return { ...data, updated: true };
   }
 
+  const insertPayload = {
+    participant_id: participantId,
+    weight_lbs: weightLbs,
+    date: today,
+    notes: notes || null
+  };
+  if (waistCm != null) insertPayload.waist_cm = waistCm;
+  if (bodyFatPct != null) insertPayload.body_fat_pct = bodyFatPct;
+  if (activities != null) insertPayload.activities = activities;
   const { data, error } = await getSupabase()
     .from('weight_entries')
-    .insert({
-      participant_id: participantId,
-      weight_lbs: weightLbs,
-      waist_cm: waistCm || null,
-      body_fat_pct: bodyFatPct || null,
-      activities: activities || null,
-      date: today,
-      notes: notes || null
-    })
+    .insert(insertPayload)
     .select()
     .single();
   if (error) throw error;

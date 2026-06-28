@@ -150,38 +150,18 @@ a:hover { color: var(--orange-600); }
   background: var(--orange-500);
 }
 
-/* ─── Tips Card ─── */
-.tips-card { overflow: hidden; }
-.tips-toggle {
-  display: flex; align-items: center; gap: 0.5rem;
-  width: 100%; padding: 0.65rem 0.75rem;
-  background: none; border: none; cursor: pointer;
-  font-family: var(--font); font-size: inherit; color: inherit;
-  text-align: left; transition: background 0.15s;
-  -webkit-tap-highlight-color: transparent;
+/* ─── Tip of the Day ─── */
+.tip-of-day { overflow: hidden; border-radius: 0.75rem; transition: background 0.3s, border-color 0.3s; }
+.tip-of-day-inner { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.65rem 0.75rem; }
+.tip-of-day-icon {
+  width: 2.2rem; height: 2.2rem; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.7); border-radius: 0.5rem;
 }
-.tips-toggle:hover { background: var(--stone-50); }
-.tips-toggle .card-title { flex: 1; }
-.tips-count {
-  font-size: 0.7rem; font-weight: 700; color: var(--stone-400);
-  background: var(--stone-100); padding: 0.15rem 0.5rem; border-radius: 999px;
-}
-.tips-arrow { transition: transform 0.25s; color: var(--stone-400); }
-.tips-card.open .tips-arrow { transform: rotate(180deg); }
-.tips-body { padding: 0 0.75rem 0.75rem; display: flex; flex-direction: column; gap: 0.6rem; }
-.tip-item {
-  display: flex; gap: 0.5rem; align-items: flex-start;
-  padding: 0.55rem 0.6rem; border-radius: 0.5rem;
-  background: var(--stone-50); font-size: 0.8rem; line-height: 1.45;
-}
-.tip-icon { width: 16px; height: 16px; flex-shrink: 0; margin-top: 0.1rem; }
-.tip-icon.tdee { color: #0891b2; }
-.tip-icon.bmi { color: #7c3aed; }
-.tip-icon.waist { color: #e11d48; }
-.tip-icon.progress { color: #16a34a; }
-.tip-icon.nutrition { color: #ca8a04; }
-.tip-icon.activity { color: #ea580c; }
-.tip-icon.motivation { color: #6366f1; }
+.tip-of-day-content { flex: 1; min-width: 0; }
+.tip-of-day-cat { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.15rem; }
+.tip-of-day-text { font-size: 0.82rem; line-height: 1.5; color: var(--stone-600); }
+.tip-of-day-text strong { color: var(--stone-800); }
 
 /* ─── Rules View ─── */
 .rules-card {

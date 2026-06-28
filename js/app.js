@@ -362,38 +362,52 @@ function getApplicableTips() {
 }
 
 function renderTips(entries) {
-  const body = $('#home-tips-body');
-  const count = $('#home-tips-count');
-  if (!body || !count) return;
+  const card = $('#home-tip-card');
+  const icon = $('#home-tip-icon');
+  const cat = $('#home-tip-cat');
+  const text = $('#home-tip-text');
+  if (!card || !icon || !cat || !text) return;
   const tips = getApplicableTips();
-  count.textContent = tips.length;
+  if (!tips.length) { card.style.display = 'none'; return; }
 
-  // Pick up to 5 random tips that apply
-  const shuffled = tips.sort(() => Math.random() - 0.5);
-  const selected = shuffled.slice(0, 5);
+  // Deterministic pick: same tip all day, changes daily
+  const dateStr = getLocalDate();
+  const seed = dateStr + '-' + (state.user?.id || '0');
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+    hash |= 0;
+  }
+  const tip = tips[Math.abs(hash) % tips.length];
+  if (!tip) { card.style.display = 'none'; return; }
 
-  body.innerHTML = selected.map(tip => {
-    const p = state.user;
-    const entries = state.weightHistory || [];
-    const currentLbs = entries.length > 0 ? entries[0].weight_lbs : p.starting_weight_lbs;
-    const bmi = CALC.bmi(currentLbs, p.height_cm);
-    const tdee = CALC.tdee(p.sex, currentLbs, p.height_cm, p.age, p.activity_level);
-    const idealLbs = CALC.idealWeight(p.sex, p.height_cm);
-    const progress = CALC.progressToIdeal(p.starting_weight_lbs, currentLbs, idealLbs);
-    const html = tip.text(p, tdee, bmi, entries, progress);
-    return `<div class="tip-item"><svg class="tip-icon ${tip.icon}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><span>${html}</span></div>`;
-  }).join('');
-}
+  const p = state.user;
+  const wEntries = state.weightHistory || [];
+  const currentLbs = wEntries.length > 0 ? wEntries[0].weight_lbs : p.starting_weight_lbs;
+  const bmi = CALC.bmi(currentLbs, p.height_cm);
+  const tdee = CALC.tdee(p.sex, currentLbs, p.height_cm, p.age, p.activity_level);
+  const idealLbs = CALC.idealWeight(p.sex, p.height_cm);
+  const progress = CALC.progressToIdeal(p.starting_weight_lbs, currentLbs, idealLbs);
+  const html = tip.text(p, tdee, bmi, wEntries, progress);
 
-function initTips() {
-  const toggle = $('#home-tips-toggle');
-  const body = $('#home-tips-body');
-  if (!toggle || !body) return;
-  toggle.addEventListener('click', () => {
-    const card = toggle.closest('.tips-card');
-    const isOpen = card.classList.toggle('open');
-    body.classList.toggle('hidden', !isOpen);
-  });
+  const catColors = {
+    tdee: { bg: 'rgba(8,145,178,0.12)', border: '#0891b2', label: 'Calorías y TDEE' },
+    bmi: { bg: 'rgba(124,58,237,0.12)', border: '#7c3aed', label: 'BMI' },
+    waist: { bg: 'rgba(225,29,72,0.12)', border: '#e11d48', label: 'Cintura' },
+    progress: { bg: 'rgba(22,163,74,0.12)', border: '#16a34a', label: 'Progreso' },
+    nutrition: { bg: 'rgba(202,138,4,0.12)', border: '#ca8a04', label: 'Nutrición' },
+    activity: { bg: 'rgba(234,88,12,0.12)', border: '#ea580c', label: 'Actividad' },
+    motivation: { bg: 'rgba(99,102,241,0.12)', border: '#6366f1', label: 'Motivación' }
+  };
+  const colors = catColors[tip.cat] || catColors.tdee;
+
+  card.style.display = '';
+  card.style.borderLeft = `4px solid ${colors.border}`;
+  card.style.background = colors.bg;
+  icon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="${colors.border}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
+  cat.textContent = colors.label;
+  cat.style.color = colors.border;
+  text.innerHTML = html;
 }
 
 // ─── Report Banner ───
@@ -1278,7 +1292,6 @@ function initAuthTabs() {
 document.addEventListener('DOMContentLoaded', () => {
   initAuthTabs();
   initEntryEditModal();
-  initTips();
 
   // Forms
   $('#setup-form')?.addEventListener('submit', handleAdminSetup);
