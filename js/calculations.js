@@ -42,15 +42,15 @@ const CALC = {
     return { label: 'Obesidad Grado III', color: '#b91c1c' };
   },
 
-  // ─── Peso Ideal (Hamwi) ───
-  // Requiere altura en cm, devuelve lbs
+  // ─── Peso Ideal ───
+  // Basado en BMI target diferenciado por sexo:
+  //   Hombres: BMI 24.7 → referencia ~165 lbs para 174 cm
+  //   Mujeres: BMI 22.5 → referencia clínica dentro del rango normal
+  // Devuelve lbs
   idealWeight(sex, heightCm) {
-    const heightIn = CALC.cmToInches(heightCm);
-    const overFiveFt = Math.max(0, heightIn - 60);
-    if (sex === 'male') {
-      return 106 + 6 * overFiveFt;
-    }
-    return 100 + 5 * overFiveFt;
+    const heightM = heightCm / 100;
+    const targetBmi = sex === 'male' ? 24.7 : 22.5;
+    return CALC.kgToLbs(targetBmi * heightM * heightM);
   },
 
   // ─── TDEE (Mifflin-St Jeor) ───
