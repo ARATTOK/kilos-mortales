@@ -1321,7 +1321,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#admin-create-form')?.addEventListener('submit', handleAdminCreateParticipant);
   $('#btn-logout')?.addEventListener('click', handleLogout);
   $('#unit-toggle')?.addEventListener('click', handleUnitToggle);
-  $('#home-go-ranking')?.addEventListener('click', () => showView('leaderboard'));
+  $('#home-go-ranking')?.addEventListener('click', async () => { showView('leaderboard'); await renderLeaderboard(); await updateReportBanner(); });
   $('#report-banner-btn')?.addEventListener('click', () => { showView('checkin'); renderCheckin(); });
   $('#admin-go-dashboard')?.addEventListener('click', () => handleLogout());
 
