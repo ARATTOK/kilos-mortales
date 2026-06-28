@@ -189,6 +189,7 @@ async function addWeightEntry(participantId, weightLbs, waistCm, bodyFatPct, act
     participant_id: participantId,
     weight_lbs: weightLbs,
     date: today,
+    created_at: new Date().toISOString(),
     notes: notes || null
   };
   if (waistCm != null) insertPayload.waist_cm = waistCm;
@@ -215,7 +216,7 @@ async function getWeightEntries(participantId) {
 }
 
 async function updateWeightEntry(id, data) {
-  const payload = {};
+  const payload = { created_at: new Date().toISOString() };
   if (data.weight_lbs !== undefined) payload.weight_lbs = data.weight_lbs;
   if (data.waist_cm !== undefined) payload.waist_cm = data.waist_cm;
   if (data.body_fat_pct !== undefined) payload.body_fat_pct = data.body_fat_pct;

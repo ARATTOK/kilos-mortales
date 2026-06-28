@@ -582,6 +582,26 @@ a:hover { color: var(--orange-600); }
 }
 .activity-btn.active + .activity-label { color: #ea580c; }
 
+/* ─── Check-in form ─── */
+.card-checkin { padding: 1rem 1.1rem; }
+.checkin-subtitle { font-size: 0.8rem; color: var(--stone-400); margin-bottom: 0.85rem; line-height: 1.4; }
+.checkin-form { display: flex; flex-direction: column; gap: 0.85rem; }
+.checkin-field { display: flex; flex-direction: column; gap: 0.25rem; }
+.checkin-label { font-size: 0.75rem; font-weight: 700; color: var(--stone-500); }
+.checkin-input-group { display: flex; gap: 0.5rem; align-items: center; }
+.checkin-input-group .form-input { flex: 1; }
+.checkin-unit {
+  font-weight: 800; font-size: 0.82rem; color: var(--stone-500);
+  background: var(--stone-100); padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm); flex-shrink: 0; line-height: 1;
+}
+.checkin-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+.checkin-section-label {
+  font-size: 0.75rem; font-weight: 700; color: var(--stone-500);
+  margin-top: 0.15rem;
+}
+#checkin-notes { font-size: 0.82rem; }
+
 /* ─── Weight History ─── */
 .weight-entry {
   display: grid;
@@ -594,6 +614,7 @@ a:hover { color: var(--orange-600); }
 }
 .weight-entry:last-child { border-bottom: none; }
 .we-date { font-weight: 600; color: var(--stone-500); }
+.we-time { font-size: 0.65rem; color: var(--stone-400); font-weight: 500; }
 .we-weight { font-weight: 800; color: var(--stone-800); text-align: right; }
 .we-change { font-size: 0.75rem; font-weight: 700; text-align: right; }
 .we-change.down { color: #16a34a; }

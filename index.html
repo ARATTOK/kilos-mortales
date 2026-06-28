@@ -424,24 +424,37 @@
           <div class="week-dot">—</div><div class="week-dot">—</div>
         </div>
 
-        <div class="card" style="margin-bottom:0.75rem;">
+        <div class="card card-checkin" style="margin-bottom:0.75rem;">
           <div class="card-header"><span class="card-title">Reporte semanal</span></div>
-          <p style="font-size:0.8rem;color:var(--stone-400);margin-bottom:0.65rem;">
-            Regístrate cada semana para tracking consistente.
-          </p>
-          <form id="checkin-form" style="display:flex;flex-direction:column;gap:0.5rem;">
-            <div style="display:flex;gap:0.5rem;align-items:center;">
-              <input class="form-input" id="checkin-weight" type="number" step="0.1" placeholder="Peso" min="1" style="flex:1;">
-              <span id="checkin-unit-label" style="font-weight:700;font-size:0.85rem;color:var(--stone-500);flex-shrink:0;">kg</span>
+          <p class="checkin-subtitle">Regístrate cada semana para tracking consistente.</p>
+          <form id="checkin-form" class="checkin-form">
+            <div class="checkin-field">
+              <label class="checkin-label">Peso</label>
+              <div class="checkin-input-group">
+                <input class="form-input" id="checkin-weight" type="number" step="0.1" placeholder="Ej: 75.5" min="1">
+                <span class="checkin-unit" id="checkin-unit-label">kg</span>
+              </div>
             </div>
-            <div style="display:flex;gap:0.5rem;align-items:center;">
-              <input class="form-input" id="checkin-waist" type="number" step="0.1" placeholder="Cintura (cm)" min="1" style="flex:1;">
-              <input class="form-input" id="checkin-bf" type="number" step="0.1" placeholder="% Grasa corporal" min="0" max="70" style="flex:1;">
+            <div class="checkin-row">
+              <div class="checkin-field">
+                <label class="checkin-label">Cintura (cm)</label>
+                <input class="form-input" id="checkin-waist" type="number" step="0.1" placeholder="Opcional" min="1">
+              </div>
+              <div class="checkin-field">
+                <label class="checkin-label">% Grasa corporal</label>
+                <input class="form-input" id="checkin-bf" type="number" step="0.1" placeholder="Opcional" min="0" max="70">
+              </div>
             </div>
-            <div style="font-size:0.78rem;font-weight:700;color:var(--stone-500);margin-top:0.25rem;">Actividad física de la semana</div>
+            <div class="checkin-section-label">Actividad física de la semana</div>
             <div class="activity-picker" id="activity-picker"></div>
-            <input class="form-input" id="checkin-notes" type="text" placeholder="Nota opcional" style="font-size:0.8rem;">
-            <button class="btn btn-primary" id="checkin-submit" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;display:block;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="m9 14 2 2 4-4"/></svg> Reportar</button>
+            <div class="checkin-field">
+              <label class="checkin-label">Nota <span style="color:var(--stone-400);font-weight:400;">(opcional)</span></label>
+              <input class="form-input" id="checkin-notes" type="text" placeholder="¿Cómo te fue esta semana?">
+            </div>
+            <button class="btn btn-primary btn-block" id="checkin-submit" type="submit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;display:block;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="m9 14 2 2 4-4"/></svg>
+              Reportar
+            </button>
           </form>
         </div>
 

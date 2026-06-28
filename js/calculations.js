@@ -148,6 +148,12 @@ const CALC = {
     return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   },
 
+  formatDateTime(createdAt) {
+    if (!createdAt) return '';
+    const d = new Date(createdAt);
+    return d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  },
+
   // ─── Peso en kg para inputs en metric ───
   formatWeightShort(lbs, unitPref) {
     if (unitPref === 'metric') return CALC.lbsToKg(lbs).toFixed(1);

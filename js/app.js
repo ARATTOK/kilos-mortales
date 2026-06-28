@@ -939,7 +939,7 @@ async function renderCheckin() {
       if (acts.length) extra += ` · ${acts.map(a => a.label).join(', ')}`;
     }
     div.innerHTML = `
-      <span class="we-date">${CALC.formatDate(entry.date)}</span>
+      <span class="we-date">${CALC.formatDate(entry.date)} <span class="we-time">${CALC.formatDateTime(entry.created_at)}</span></span>
       <span class="we-weight">${CALC.formatWeight(entry.weight_lbs, up)}</span>
       <span>${changeHtml}</span>
       ${extra ? `<span class="we-extra">${extra}</span>` : ''}
