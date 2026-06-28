@@ -12,6 +12,33 @@ const state = {
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
+const STORAGE_KEY = 'km_session';
+
+function saveSession() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    user: state.user,
+    userType: state.userType,
+    activeUnitPref: state.activeUnitPref
+  }));
+}
+
+function loadSession() {
+  try {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (data && data.user && data.userType) {
+      state.user = data.user;
+      state.userType = data.userType;
+      state.activeUnitPref = data.activeUnitPref || 'metric';
+      return true;
+    }
+  } catch(_) {}
+  return false;
+}
+
+function clearSession() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
 function showToast(message, type = 'info') {
   const container = $('#toast-container');
   const toast = document.createElement('div');
@@ -114,6 +141,7 @@ async function handleLogin(e) {
     if (isAdmin) {
       const user = await adminLogin(username, password);
       state.user = user; state.userType = 'admin';
+      saveSession();
       showView('admin');
       await renderAdminPanel();
       showToast(`Bienvenido ${user.username}`, 'success');
@@ -121,6 +149,7 @@ async function handleLogin(e) {
       const user = await participantLogin(username, password);
       state.user = user; state.userType = 'participant';
       state.activeUnitPref = user.unit_preference;
+      saveSession();
       updateUnitToggle();
       showView('home');
       await renderHome();
@@ -140,6 +169,7 @@ function handleLogout() {
   state.chartInstances = {};
   state.user = null; state.userType = null;
   state.leaderboard = []; state.participantData = null; state.weightHistory = [];
+  clearSession();
   showView('login');
   showToast('Sesión cerrada', 'info');
 }
@@ -682,6 +712,7 @@ function updateUnitToggle() {
 
 async function handleUnitToggle() {
   state.activeUnitPref = state.activeUnitPref === 'metric' ? 'imperial' : 'metric';
+  saveSession();
   updateUnitToggle();
 
   // Destroy charts so they re-render with new units
@@ -768,5 +799,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Start
-  checkInitialSetup();
+  if (loadSession()) {
+    if (state.userType === 'admin') {
+      showView('admin');
+      renderAdminPanel();
+    } else {
+      updateUnitToggle();
+      showView('home');
+      renderHome();
+    }
+  } else {
+    checkInitialSetup();
+  }
 });
