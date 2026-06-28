@@ -2,363 +2,318 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kilos Mortales 🔥</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Kilos Mortales">
+  <meta name="theme-color" content="#f97316">
+  <title>Kilos Mortales</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23f97316%22 stroke=%22%23f97316%22 stroke-width=%220%22><path d=%22M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2232%22 fill=%22%23f97316%22/><path d=%22M96 132c-16 0-28-12-28-28 0-12 6-20 14-30 8-10 14-22 14-36 0 14 6 26 14 36 8 10 14 18 14 30 0 16-12 28-28 28z%22 fill=%22%23fff%22 opacity=%220.95%22/></svg>">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <!-- ════════ NAVBAR ════════ -->
   <nav id="navbar" class="navbar hidden">
     <div class="container">
-      <div class="brand">🔥 Kilos Mortales</div>
+      <div class="brand">
+        <svg class="icon icon-md" viewBox="0 0 24 24" fill="var(--orange-100)" stroke="var(--orange-500)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+        Kilos Mortales
+      </div>
       <div class="nav-right">
         <span class="nav-user" id="nav-username"></span>
+        <button class="unit-toggle" id="unit-toggle" title="Cambiar unidades">kg</button>
         <button class="btn btn-ghost btn-sm" id="btn-logout">Salir</button>
       </div>
     </div>
   </nav>
 
+  <!-- ════════ BOTTOM NAV ════════ -->
+  <nav id="bottom-nav" class="bottom-nav hidden">
+    <button class="nav-item active" data-view="home">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Inicio</span>
+    </button>
+    <button class="nav-item" data-view="leaderboard">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M4 22h16"/><path d="M10 22V8h4v14"/><path d="M10 14h4"/><path d="M10 10h4"/></svg>
+      <span>Ranking</span>
+    </button>
+    <button class="nav-item" data-view="stats">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+      <span>Stats</span>
+    </button>
+    <button class="nav-item" data-view="checkin">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="m9 14 2 2 4-4"/></svg>
+      <span>Peso</span>
+    </button>
+  </nav>
+
   <!-- ════════ MAIN APP ════════ -->
   <main id="app">
 
-    <!-- ──────── VIEW: ADMIN SETUP ──────── -->
-    <section id="view-admin-setup" class="view auth-page">
+    <!-- ─── ADMIN SETUP ─── -->
+    <section id="view-admin-setup" class="view auth-page no-bottom-nav">
       <div class="auth-card">
         <div class="auth-logo">
-          <h1>🔥 Kilos Mortales</h1>
-          <p>Configuración inicial del admin</p>
-        </div>
+          <svg class="icon icon-xl" viewBox="0 0 24 24" fill="var(--orange-100)" stroke="var(--orange-500)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 0.5rem;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+          <h1>Kilos Mortales</h1><p>Configuración inicial</p></div>
         <form id="setup-form">
-          <div class="form-group">
-            <label>Usuario admin</label>
-            <input class="form-input" id="setup-username" type="text" placeholder="admin" autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label>Contraseña</label>
-            <input class="form-input" id="setup-password" type="password" placeholder="••••" autocomplete="new-password">
-          </div>
-          <div class="form-group">
-            <label>Confirmar contraseña</label>
-            <input class="form-input" id="setup-confirm" type="password" placeholder="••••">
-          </div>
-          <button class="btn btn-primary" id="setup-btn" type="submit" style="width:100%;margin-top:0.5rem;">🔥 Crear Admin</button>
+          <div class="form-group"><label>Usuario admin</label><input class="form-input" id="setup-username" type="text" placeholder="admin" autocomplete="off"></div>
+          <div class="form-group"><label>Contraseña</label><input class="form-input" id="setup-password" type="password" placeholder="••••" autocomplete="new-password"></div>
+          <div class="form-group"><label>Confirmar contraseña</label><input class="form-input" id="setup-confirm" type="password" placeholder="••••"></div>
+          <button class="btn btn-primary btn-block" id="setup-btn" type="submit">Crear Admin</button>
         </form>
       </div>
     </section>
 
-    <!-- ──────── VIEW: LOGIN ──────── -->
-    <section id="view-login" class="view auth-page">
+    <!-- ─── LOGIN ─── -->
+    <section id="view-login" class="view auth-page no-bottom-nav">
       <div class="auth-card">
         <div class="auth-logo">
-          <h1>🔥 Kilos Mortales</h1>
-          <p>Reta a tus amigos · Transforma tu cuerpo</p>
-        </div>
-
+          <svg class="icon icon-xl" viewBox="0 0 24 24" fill="var(--orange-100)" stroke="var(--orange-500)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 0.5rem;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+          <h1>Kilos Mortales</h1><p>Reta a tus amigos · Transforma tu cuerpo</p></div>
         <div class="auth-tabs">
           <button class="auth-tab" id="login-tab-admin">Admin</button>
           <button class="auth-tab active" id="login-tab-participant">Participante</button>
         </div>
-
-        <h2 id="login-title" style="font-size:1rem;font-weight:800;margin-bottom:1rem;color:var(--stone-700);">Participante</h2>
-
+        <h2 id="login-title" style="font-size:0.95rem;font-weight:800;margin-bottom:0.85rem;color:var(--stone-700);">Participante</h2>
         <form id="login-form">
-          <div class="form-group">
-            <label>Nickname</label>
-            <input class="form-input" id="login-username" type="text" placeholder="Nickname" autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label>Contraseña</label>
-            <input class="form-input" id="login-password" type="password" placeholder="••••">
-          </div>
-          <button class="btn btn-primary" id="login-btn" type="submit" style="width:100%;">🔥 Ingresar</button>
+          <div class="form-group"><label>Nickname</label><input class="form-input" id="login-username" type="text" placeholder="Nickname" autocomplete="off"></div>
+          <div class="form-group"><label>Contraseña</label><input class="form-input" id="login-password" type="password" placeholder="••••"></div>
+          <button class="btn btn-primary btn-block" id="login-btn" type="submit">Ingresar</button>
         </form>
-
-        <div class="auth-divider">o</div>
-
-        <p style="text-align:center;font-size:0.85rem;color:var(--stone-400);">
-          ¿No tienes cuenta?<br>
-          <a href="#" id="go-to-register" style="font-weight:700;">Regístrate aquí 🙌</a>
-        </p>
       </div>
     </section>
-
-    <!-- ──────── VIEW: REGISTER ──────── -->
-    <section id="view-register" class="view auth-page">
-      <div class="auth-card">
-        <div class="auth-logo">
-          <h1>🔥 Kilos Mortales</h1>
-          <p>Regístrate y únete al reto</p>
+    <!-- ─── HOME ─── -->
+    <section id="view-home" class="view hidden">
+      <div class="container view-content">
+        <div class="home-header" id="home-header">
+          <h2 id="home-welcome">Hola!</h2>
+          <div class="subtitle" id="home-subtitle">Cargando...</div>
         </div>
 
-        <form id="register-form">
-          <div class="form-group">
-            <label>Nickname</label>
-            <input class="form-input" id="reg-nickname" type="text" placeholder="Tu nickname" autocomplete="off">
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Contraseña</label>
-              <input class="form-input" id="reg-password" type="password" placeholder="••••">
-            </div>
-            <div class="form-group">
-              <label>Confirmar</label>
-              <input class="form-input" id="reg-confirm" type="password" placeholder="••••">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Edad</label>
-              <input class="form-input" id="reg-age" type="number" placeholder="25" min="10" max="120">
-            </div>
-            <div class="form-group">
-              <label>Sexo</label>
-              <div style="display:flex;gap:0.5rem;margin-top:0.3rem;">
-                <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.85rem;font-weight:600;cursor:pointer;">
-                  <input type="radio" name="reg-sex" value="male"> Masculino
-                </label>
-                <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.85rem;font-weight:600;cursor:pointer;">
-                  <input type="radio" name="reg-sex" value="female"> Femenino
-                </label>
-              </div>
-            </div>
-          </div>
+        <div id="home-change" class="change-banner"></div>
 
-          <div class="form-group">
-            <label>Altura (metros)</label>
-            <input class="form-input" id="reg-height" type="number" step="0.01" placeholder="1.75" min="0.5" max="3">
-            <div class="form-hint" id="reg-height-hint">Ej: 1.75 m ≈ 5′9″</div>
-          </div>
+        <div class="stats-row" id="home-stats">
+          <div class="stat-pill"><div class="val" id="hstat-weight">—</div><div class="lbl">Peso</div></div>
+          <div class="stat-pill"><div class="val" id="hstat-lost">—</div><div class="lbl">Perdido</div></div>
+          <div class="stat-pill"><div class="val" id="hstat-bmi">—</div><div class="lbl">BMI</div></div>
+          <div class="stat-pill"><div class="val" id="hstat-tdee">—</div><div class="lbl">TDEE</div></div>
+        </div>
 
-          <div class="form-group">
-            <label>Peso inicial</label>
-            <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.3rem;">
-              <label style="display:flex;align-items:center;gap:0.25rem;font-size:0.82rem;font-weight:600;cursor:pointer;">
-                <input type="radio" name="reg-weight-mode" value="kg" checked> kg
-              </label>
-              <label style="display:flex;align-items:center;gap:0.25rem;font-size:0.82rem;font-weight:600;cursor:pointer;">
-                <input type="radio" name="reg-weight-mode" value="lbs"> lbs
-              </label>
-            </div>
-            <input class="form-input" id="reg-weight" type="number" step="0.1" placeholder="100 kg" min="1" max="800">
-          </div>
+        <div class="card card-compact" style="margin-bottom:0.75rem;">
+          <div class="card-header"><span class="card-title">Progreso a peso ideal</span><span id="home-progress-label" style="font-weight:800;font-size:0.82rem;color:var(--orange-500);">0%</span></div>
+          <div class="progress-track"><div class="progress-fill" id="home-progress-fill" style="width:0%"></div></div>
+        </div>
 
-          <div class="form-group">
-            <label>Nivel de actividad física</label>
-            <select class="form-select" id="reg-activity">
-              <option value="">Selecciona...</option>
-              <option value="sedentary">Sedentario (poco o nada de ejercicio)</option>
-              <option value="light">Ligero (1-3 días/semana)</option>
-              <option value="moderate">Moderado (3-5 días/semana)</option>
-              <option value="heavy">Intenso (6-7 días/semana)</option>
-              <option value="very_heavy">Muy intenso (2x/día o trabajo físico)</option>
-            </select>
-          </div>
+        <div class="card card-compact" style="margin-bottom:0.75rem;">
+          <div class="card-header"><span class="card-title">Top 3</span><button class="btn btn-ghost btn-sm" id="home-go-ranking" style="font-size:0.7rem;">Ver todos →</button></div>
+          <div class="mini-leaderboard" id="home-mini-lb"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
 
-          <div class="form-group">
-            <label>Unidad de visualización preferida</label>
-            <div style="display:flex;gap:0.75rem;margin-top:0.3rem;">
-              <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.85rem;font-weight:600;cursor:pointer;">
-                <input type="radio" name="reg-unit-pref" value="metric" checked> Métrico (kg, m)
-              </label>
-              <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.85rem;font-weight:600;cursor:pointer;">
-                <input type="radio" name="reg-unit-pref" value="imperial"> Imperial (lbs, ft/in)
-              </label>
-            </div>
-          </div>
-
-          <button class="btn btn-primary" id="reg-btn" type="submit" style="width:100%;margin-top:0.25rem;">🔥 Registrarse</button>
-        </form>
-
-        <p style="text-align:center;font-size:0.85rem;color:var(--stone-400);margin-top:1rem;">
-          ¿Ya tienes cuenta? <a href="#" id="go-to-login" style="font-weight:700;">Inicia sesión</a>
-        </p>
+        <div class="card card-compact">
+          <div class="card-header"><span class="card-title">Próximo pesaje</span></div>
+          <div id="home-next-checkin" style="font-size:0.85rem;color:var(--stone-500);">Cargando...</div>
+        </div>
       </div>
     </section>
 
-    <!-- ──────── VIEW: DASHBOARD ──────── -->
-    <section id="view-dashboard" class="view dashboard hidden">
+    <!-- ─── LEADERBOARD ─── -->
+    <section id="view-leaderboard" class="view hidden">
+      <div class="container view-content">
+        <h2 style="font-size:1.15rem;font-weight:800;margin-bottom:0.75rem;">Ranking General</h2>
+
+        <div id="ranking-hero" class="ranking-hero">
+          <div style="font-size:0.75rem;opacity:0.7;font-weight:600;">LIDER</div>
+          <div class="hero-rank">1</div>
+          <div class="hero-name">—</div>
+          <div class="hero-pct">—</div>
+          <div class="hero-detail">—</div>
+        </div>
+
+        <div id="ranking-list"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </section>
+
+    <!-- ─── STATS ─── -->
+    <section id="view-stats" class="view hidden">
+      <div class="container view-content">
+        <h2 style="font-size:1.15rem;font-weight:800;margin-bottom:0.75rem;">Estadísticas</h2>
+
+        <!-- Charts -->
+        <div class="card chart-card" style="margin-bottom:0.75rem;">
+          <div class="card-header"><span class="card-title">Tu peso</span></div>
+          <div class="chart-container"><canvas id="chart-weight"></canvas></div>
+        </div>
+
+        <div class="card chart-card" style="margin-bottom:0.75rem;">
+          <div class="card-header"><span class="card-title">% Perdido — Todos</span></div>
+          <div class="chart-container"><canvas id="chart-group"></canvas></div>
+        </div>
+
+        <div class="card chart-card" style="margin-bottom:0.75rem;">
+          <div class="card-header"><span class="card-title">BMI</span></div>
+          <div class="chart-container"><canvas id="chart-bmi"></canvas></div>
+        </div>
+
+        <!-- BMI Explainer -->
+        <div class="info-card">
+          <div class="info-title">¿Qué es el BMI?</div>
+          <div class="info-body">
+            El <strong>Índice de Masa Corporal (BMI)</strong> relaciona tu peso con tu altura.
+            Se calcula como <strong>peso(kg) / altura(m)²</strong>.<br><br>
+            <strong>Categorías:</strong>
+          </div>
+          <div class="bmi-meter" id="bmi-meter"><div class="bmi-marker" id="bmi-marker" style="left:50%"></div></div>
+          <div class="bmi-labels"><span>18.5 Normal</span><span>25 Sobrepeso</span><span>30 Obesidad</span></div>
+          <div class="info-body" style="margin-top:0.4rem;">
+            Tu BMI actual: <strong id="bmi-current-val">—</strong> (<span id="bmi-current-cat">—</span>)
+          </div>
+          <div class="info-tip green" id="bmi-tip-normal" style="display:none;">
+            <strong>BMI Normal.</strong> Estás en un rango saludable. Sigue manteniendo buenos hábitos.
+          </div>
+          <div class="info-tip orange" id="bmi-tip-overweight" style="display:none;">
+            <strong>Sobrepeso.</strong> Con una reducción del 5-10% de tu peso puedes mejorar
+            significativamente tu salud cardiovascular.
+          </div>
+          <div class="info-tip red" id="bmi-tip-obese" style="display:none;">
+            <strong>Obesidad.</strong> Perder peso reduce el riesgo de enfermedades crónicas.
+            Un déficit de 300-500 kcal/día te ayudará a perder ~0.5 kg por semana.
+          </div>
+          <div class="info-tip orange" id="bmi-tip-underweight" style="display:none;">
+            <strong>Bajo peso.</strong> Consulta con un profesional de la salud para asegurar
+            una nutrición adecuada.
+          </div>
+        </div>
+
+        <!-- TDEE Explainer -->
+        <div class="info-card">
+          <div class="info-title">¿Qué es TDEE?</div>
+          <div class="info-body">
+            <strong>TDEE</strong> (Total Daily Energy Expenditure) son las <strong>calorías que quemas al día</strong>
+            incluyendo tus actividades. Está compuesto por:<br><br>
+            • <strong>BMR</strong> — Calorías en reposo total (tu motor basal)<br>
+            • <strong>Actividad física</strong> — Ejercicio y movimiento diario<br>
+            • <strong>Efecto térmico</strong> — Digestión de alimentos<br><br>
+            <strong>Tu TDEE: <span id="tdee-current-val">—</span> kcal/día</strong>
+          </div>
+          <div class="info-tip green">
+            <strong>Para bajar de peso:</strong> consume <strong>300-500 kcal menos</strong> que tu TDEE.
+            Eso equivale a ~0.5 kg (1 lb) por semana. Déficit de 1000 kcal = ~1 kg/semana (no recomendado sin supervisión).
+          </div>
+          <div class="info-tip orange">
+            <strong>Para mantener:</strong> consume ≈ tu TDEE.<br>
+            <strong>Para aumentar músculo:</strong> consume 200-300 kcal más + entrenamiento de fuerza.
+          </div>
+          <div class="info-body" style="margin-top:0.4rem;">
+            <strong>Tips para aumentar tu TDEE (quemar más calorías):</strong><br>
+            • Camina 8,000-10,000 pasos al día<br>
+            • Entrena fuerza 3x/semana (el músculo quema calorías en reposo)<br>
+            • Duerme 7-8 horas (la falta de sueño reduce el metabolismo)<br>
+            • Come suficiente proteína (mayor efecto térmico que carbohidratos/grasas)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── CHECK-IN ─── -->
+    <section id="view-checkin" class="view hidden">
+      <div class="container view-content">
+        <div class="checkin-hero">
+          <div class="big-number" id="checkin-last-weight">—</div>
+          <div class="big-label" id="checkin-last-label">Último registro</div>
+          <div class="checkin-streak" id="checkin-streak">Racha: —</div>
+        </div>
+
+        <div class="week-grid" id="week-grid">
+          <div class="week-dot">—</div><div class="week-dot">—</div>
+          <div class="week-dot">—</div><div class="week-dot">—</div>
+          <div class="week-dot">—</div><div class="week-dot">—</div>
+          <div class="week-dot">—</div>
+        </div>
+
+        <div class="card" style="margin-bottom:0.75rem;">
+          <div class="card-header"><span class="card-title">Registrar peso</span></div>
+          <p style="font-size:0.8rem;color:var(--stone-400);margin-bottom:0.65rem;">
+            Pesate cada 3 días para tracking consistente.
+          </p>
+          <form id="checkin-form" style="display:flex;flex-direction:column;gap:0.5rem;">
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+              <input class="form-input" id="checkin-weight" type="number" step="0.1" placeholder="Peso" min="1" style="flex:1;">
+              <span id="checkin-unit-label" style="font-weight:700;font-size:0.85rem;color:var(--stone-500);flex-shrink:0;">kg</span>
+            </div>
+            <input class="form-input" id="checkin-notes" type="text" placeholder="Nota opcional (ej: después del gym)" style="font-size:0.8rem;">
+            <button class="btn btn-primary" id="checkin-submit" type="submit">Registrar</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">Historial</span></div>
+          <div id="checkin-history"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── ADMIN ─── -->
+    <section id="view-admin" class="view admin-page hidden no-bottom-nav">
       <div class="container">
-
-        <div class="welcome-section">
-          <h2 id="dash-welcome">¡Hola! 🔥</h2>
-          <div class="subtitle" id="dash-subtitle">Cargando...</div>
-          <div id="dash-change" style="font-size:0.9rem;font-weight:700;margin-top:0.3rem;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+          <h2 id="admin-title" style="margin-bottom:0;">Panel de Admin</h2>
+          <button class="btn btn-sm btn-secondary" id="admin-go-dashboard">Ir a la app</button>
         </div>
 
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-value" id="stat-weight">—</div>
-            <div class="stat-label">Peso Actual</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stat-lost">—</div>
-            <div class="stat-label">Perdido</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stat-bmi">—</div>
-            <div class="stat-label">BMI</div>
-            <div class="stat-badge" id="stat-bmi-badge">—</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stat-tdee">—</div>
-            <div class="stat-label">TDEE kcal</div>
-          </div>
-        </div>
-
-        <div class="card progress-section" style="margin-bottom:1rem;">
-          <div class="progress-header">
-            <span>🎯 Progreso hacia peso ideal</span>
-            <span id="progress-label">0%</span>
-          </div>
-          <div class="progress-track">
-            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-          </div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div class="card">
-            <div class="card-header">
-              <span class="card-title">🏆 Clasificación</span>
-            </div>
-            <div id="leaderboard-entries">
-              <div class="loading"><div class="spinner"></div></div>
-            </div>
-          </div>
-
-          <div style="display:flex;flex-direction:column;gap:1rem;">
-            <div class="card">
-              <div class="card-header">
-                <span class="card-title">📝 Check-in</span>
-              </div>
-              <form id="checkin-form" class="checkin-form">
-                <input class="form-input" id="checkin-weight" type="number" step="0.1" placeholder="Peso" min="1">
-                <button class="btn btn-primary" id="checkin-submit" type="submit">🔥 Registrar</button>
-              </form>
-              <div class="form-group" style="margin-top:0.5rem;margin-bottom:0;">
-                <input class="form-input" id="checkin-notes" type="text" placeholder="Nota opcional (ej: después del gym 💪)" style="font-size:0.8rem;">
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="card-header">
-                <span class="card-title">📊 Historial</span>
-              </div>
-              <div id="weight-history">
-                <div class="loading"><div class="spinner"></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ──────── VIEW: ADMIN PANEL ──────── -->
-    <section id="view-admin" class="view admin-page hidden">
-      <div class="container">
-        <h2 id="admin-title">Panel de Admin 🔥</h2>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <div class="admin-grid">
 
           <div class="card">
-            <div class="card-header">
-              <span class="card-title">👥 Participantes</span>
-            </div>
+            <div class="card-header"><span class="card-title">Participantes</span></div>
             <div style="overflow-x:auto;">
               <table style="width:100%;border-collapse:collapse;">
                 <thead>
-                  <tr style="border-bottom:2px solid var(--orange-200);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--stone-400);">
-                    <th style="text-align:left;padding:0.4rem 0;">Nickname</th>
-                    <th style="text-align:left;padding:0.4rem 0;">Perfil</th>
-                    <th style="text-align:left;padding:0.4rem 0;">Peso</th>
-                    <th style="text-align:left;padding:0.4rem 0;">% Perdido</th>
-                    <th style="text-align:right;padding:0.4rem 0;"></th>
+                  <tr style="border-bottom:2px solid var(--orange-200);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--stone-400);">
+                    <th style="text-align:left;padding:0.35rem 0;">Nick</th>
+                    <th style="text-align:left;padding:0.35rem 0;">Perfil</th>
+                    <th style="text-align:left;padding:0.35rem 0;">Peso</th>
+                    <th style="text-align:left;padding:0.35rem 0;">%</th>
+                    <th style="text-align:right;padding:0.35rem 0;"></th>
                   </tr>
                 </thead>
-                <tbody id="admin-participants">
-                  <tr><td colspan="5" class="loading"><div class="spinner"></div></td></tr>
-                </tbody>
+                <tbody id="admin-participants"><tr><td colspan="5" class="loading"><div class="spinner"></div></td></tr></tbody>
               </table>
             </div>
           </div>
 
           <div class="card">
-            <div class="card-header">
-              <span class="card-title">➕ Nuevo Participante</span>
-            </div>
+            <div class="card-header"><span class="card-title">Nuevo</span></div>
             <form id="admin-create-form">
-              <div class="form-group">
-                <label>Nickname</label>
-                <input class="form-input" id="admin-nickname" type="text" placeholder="Nickname único">
-              </div>
-              <div class="form-group">
-                <label>Contraseña</label>
-                <input class="form-input" id="admin-password" type="password" placeholder="••••">
-              </div>
+              <div class="form-group"><label>Nickname</label><input class="form-input" id="admin-nickname" type="text" placeholder="Nickname único"></div>
+              <div class="form-group"><label>Contraseña</label><input class="form-input" id="admin-password" type="password" placeholder="••••"></div>
               <div class="form-row">
-                <div class="form-group">
-                  <label>Edad</label>
-                  <input class="form-input" id="admin-age" type="number" placeholder="25">
-                </div>
-                <div class="form-group">
-                  <label>Sexo</label>
-                  <div style="display:flex;gap:0.5rem;margin-top:0.3rem;">
-                    <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.8rem;font-weight:600;cursor:pointer;">
-                      <input type="radio" name="admin-sex" value="male"> M
-                    </label>
-                    <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.8rem;font-weight:600;cursor:pointer;">
-                      <input type="radio" name="admin-sex" value="female"> F
-                    </label>
+                <div class="form-group"><label>Edad</label><input class="form-input" id="admin-age" type="number" placeholder="25"></div>
+                <div class="form-group"><label>Sexo</label>
+                  <div style="display:flex;gap:0.5rem;margin-top:0.25rem;">
+                    <label style="display:flex;align-items:center;gap:0.2rem;font-size:0.8rem;font-weight:600;cursor:pointer;"><input type="radio" name="admin-sex" value="male"> M</label>
+                    <label style="display:flex;align-items:center;gap:0.2rem;font-size:0.8rem;font-weight:600;cursor:pointer;"><input type="radio" name="admin-sex" value="female"> F</label>
                   </div>
                 </div>
               </div>
-
-              <div class="form-group">
-                <label>Altura (metros)</label>
-                <input class="form-input" id="admin-height" type="number" step="0.01" placeholder="1.75" min="0.5" max="3">
-                <div class="form-hint" id="admin-height-hint">Ej: 1.75 m ≈ 5′9″</div>
-              </div>
-
+              <div class="form-group"><label>Altura (m)</label><input class="form-input" id="admin-height" type="number" step="0.01" placeholder="1.75" min="0.5" max="3"><div class="form-hint" id="admin-height-hint">Ej: 1.75 m ≈ 5′9″</div></div>
               <div class="form-group">
                 <label>Peso inicial</label>
-                <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.3rem;">
-                  <label style="display:flex;align-items:center;gap:0.25rem;font-size:0.82rem;font-weight:600;cursor:pointer;">
-                    <input type="radio" name="admin-weight-mode" value="kg" checked> kg
-                  </label>
-                  <label style="display:flex;align-items:center;gap:0.25rem;font-size:0.82rem;font-weight:600;cursor:pointer;">
-                    <input type="radio" name="admin-weight-mode" value="lbs"> lbs
-                  </label>
+                <div class="form-toggle" style="margin-bottom:0.25rem;">
+                  <label><input type="radio" name="admin-weight-mode" value="kg" checked> kg</label>
+                  <label><input type="radio" name="admin-weight-mode" value="lbs"> lbs</label>
                 </div>
                 <input class="form-input" id="admin-weight" type="number" step="0.1" placeholder="100 kg" min="1" max="800">
               </div>
-
+              <div class="form-group"><label>Actividad</label><select class="form-select" id="admin-activity"><option value="">...</option><option value="sedentary">Sedentario</option><option value="light">Ligero</option><option value="moderate">Moderado</option><option value="heavy">Intenso</option><option value="very_heavy">Muy intenso</option></select></div>
               <div class="form-group">
-                <label>Actividad</label>
-                <select class="form-select" id="admin-activity">
-                  <option value="">Selecciona...</option>
-                  <option value="sedentary">Sedentario</option>
-                  <option value="light">Ligero</option>
-                  <option value="moderate">Moderado</option>
-                  <option value="heavy">Intenso</option>
-                  <option value="very_heavy">Muy intenso</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label>Unidad de visualización</label>
-                <div style="display:flex;gap:0.75rem;margin-top:0.3rem;">
-                  <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.82rem;font-weight:600;cursor:pointer;">
-                    <input type="radio" name="admin-unit-pref" value="metric" checked> Métrico
-                  </label>
-                  <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.82rem;font-weight:600;cursor:pointer;">
-                    <input type="radio" name="admin-unit-pref" value="imperial"> Imperial
-                  </label>
+                <label>Unidad</label>
+                <div class="form-toggle">
+                  <label><input type="radio" name="admin-unit-pref" value="metric" checked> Métrico</label>
+                  <label><input type="radio" name="admin-unit-pref" value="imperial"> Imperial</label>
                 </div>
               </div>
-
-              <button class="btn btn-primary" id="admin-create-btn" type="submit" style="width:100%;">🔥 Crear Participante</button>
+              <button class="btn btn-primary btn-block" id="admin-create-btn" type="submit">Crear</button>
             </form>
           </div>
 
@@ -371,6 +326,7 @@
   <div id="toast-container" class="toast-container"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <script src="js/calculations.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/app.js"></script>
