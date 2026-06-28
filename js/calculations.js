@@ -34,12 +34,12 @@ const CALC = {
   },
 
   bmiCategory(bmi) {
-    if (bmi < 18.5) return { label: 'Bajo peso', color: '#fbbf24', emoji: '⚠️' };
-    if (bmi < 25) return { label: 'Normal', color: '#22c55e', emoji: '✅' };
-    if (bmi < 30) return { label: 'Sobrepeso', color: '#f97316', emoji: '⚡' };
-    if (bmi < 35) return { label: 'Obesidad Grado I', color: '#ef4444', emoji: '🔴' };
-    if (bmi < 40) return { label: 'Obesidad Grado II', color: '#dc2626', emoji: '⛔' };
-    return { label: 'Obesidad Grado III', color: '#b91c1c', emoji: '🚨' };
+    if (bmi < 18.5) return { label: 'Bajo peso', color: '#fbbf24' };
+    if (bmi < 25) return { label: 'Normal', color: '#22c55e' };
+    if (bmi < 30) return { label: 'Sobrepeso', color: '#f97316' };
+    if (bmi < 35) return { label: 'Obesidad Grado I', color: '#ef4444' };
+    if (bmi < 40) return { label: 'Obesidad Grado II', color: '#dc2626' };
+    return { label: 'Obesidad Grado III', color: '#b91c1c' };
   },
 
   // ─── Peso Ideal (Hamwi) ───

@@ -29,11 +29,14 @@ CREATE TABLE participants (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Weight entries (almacenado en lbs siempre)
+-- Weight entries (almacenado en lbs y cm siempre)
 CREATE TABLE weight_entries (
   id BIGSERIAL PRIMARY KEY,
   participant_id BIGINT NOT NULL REFERENCES participants(id) ON DELETE CASCADE,
   weight_lbs DECIMAL(5,1) NOT NULL,
+  waist_cm DECIMAL(5,1),
+  body_fat_pct DECIMAL(4,1),
+  activities TEXT,
   date DATE NOT NULL DEFAULT CURRENT_DATE,
   notes TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -56,3 +59,9 @@ DROP POLICY IF EXISTS "Allow all weight_entries" ON weight_entries;
 CREATE POLICY "Allow all admin" ON admin FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all participants" ON participants FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all weight_entries" ON weight_entries FOR ALL USING (true) WITH CHECK (true);
+
+-- ═══ Migration v3 (semanal + métricas) ═══
+-- Run if table already exists with old schema:
+-- ALTER TABLE weight_entries ADD COLUMN IF NOT EXISTS waist_cm DECIMAL(5,1);
+-- ALTER TABLE weight_entries ADD COLUMN IF NOT EXISTS body_fat_pct DECIMAL(4,1);
+-- ALTER TABLE weight_entries ADD COLUMN IF NOT EXISTS activities TEXT;

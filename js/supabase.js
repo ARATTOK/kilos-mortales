@@ -132,12 +132,37 @@ async function deleteParticipant(id) {
   if (error) throw error;
 }
 
-// ════════════════════════════════════════════════════════════
+async function updateParticipantPassword(id, newPassword) {
+  const passwordHash = await hashPassword(newPassword);
+  const { error } = await getSupabase()
+    .from('participants')
+    .update({ password_hash: passwordHash })
+    .eq('id', id);
+  if (error) throw error;
+}
+
+async function updateParticipant(id, data) {
+  const payload = {};
+  if (data.nickname !== undefined) payload.nickname = data.nickname;
+  if (data.sex !== undefined) payload.sex = data.sex;
+  if (data.height_cm !== undefined) payload.height_cm = data.height_cm;
+  if (data.age !== undefined) payload.age = data.age;
+  if (data.activity_level !== undefined) payload.activity_level = data.activity_level;
+  if (data.starting_weight_lbs !== undefined) payload.starting_weight_lbs = data.starting_weight_lbs;
+  if (data.unit_preference !== undefined) payload.unit_preference = data.unit_preference;
+  const { error } = await getSupabase()
+    .from('participants')
+    .update(payload)
+    .eq('id', id);
+  if (error) throw error;
+}
+
+/// ════════════════════════════════════════════════════════════
 // WEIGHT ENTRIES
 // ════════════════════════════════════════════════════════════
 
-async function addWeightEntry(participantId, weightLbs, notes) {
-  const today = new Date().toISOString().split('T')[0];
+async function addWeightEntry(participantId, weightLbs, waistCm, bodyFatPct, activities, notes) {
+  const today = getLocalDate();
 
   const { data: existing } = await getSupabase()
     .from('weight_entries')
@@ -146,9 +171,13 @@ async function addWeightEntry(participantId, weightLbs, notes) {
     .eq('date', today);
 
   if (existing && existing.length > 0) {
+    const payload = { weight_lbs: weightLbs, notes: notes || null, created_at: new Date().toISOString() };
+    if (waistCm !== null) payload.waist_cm = waistCm;
+    if (bodyFatPct !== null) payload.body_fat_pct = bodyFatPct;
+    if (activities !== null) payload.activities = activities;
     const { data, error } = await getSupabase()
       .from('weight_entries')
-      .update({ weight_lbs: weightLbs, notes: notes || null, created_at: new Date().toISOString() })
+      .update(payload)
       .eq('id', existing[0].id)
       .select()
       .single();
@@ -161,6 +190,9 @@ async function addWeightEntry(participantId, weightLbs, notes) {
     .insert({
       participant_id: participantId,
       weight_lbs: weightLbs,
+      waist_cm: waistCm || null,
+      body_fat_pct: bodyFatPct || null,
+      activities: activities || null,
       date: today,
       notes: notes || null
     })
@@ -179,6 +211,28 @@ async function getWeightEntries(participantId) {
     .limit(30);
   if (error) throw error;
   return data || [];
+}
+
+async function updateWeightEntry(id, data) {
+  const payload = {};
+  if (data.weight_lbs !== undefined) payload.weight_lbs = data.weight_lbs;
+  if (data.waist_cm !== undefined) payload.waist_cm = data.waist_cm;
+  if (data.body_fat_pct !== undefined) payload.body_fat_pct = data.body_fat_pct;
+  if (data.activities !== undefined) payload.activities = data.activities;
+  if (data.notes !== undefined) payload.notes = data.notes;
+  const { error } = await getSupabase()
+    .from('weight_entries')
+    .update(payload)
+    .eq('id', id);
+  if (error) throw error;
+}
+
+async function deleteWeightEntry(id) {
+  const { error } = await getSupabase()
+    .from('weight_entries')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
 }
 
 async function getLatestWeight(participantId) {

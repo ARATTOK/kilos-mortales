@@ -28,6 +28,15 @@
     </div>
   </nav>
 
+  <!-- ════════ REPORT BANNER ════════ -->
+  <div id="report-banner" class="report-banner hidden">
+    <div class="container report-banner-inner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+      <span id="report-banner-text">¡Te toca reportarte esta semana!</span>
+      <button class="btn btn-sm btn-banner" id="report-banner-btn">Reportar</button>
+    </div>
+  </div>
+
   <!-- ════════ BOTTOM NAV ════════ -->
   <nav id="bottom-nav" class="bottom-nav hidden">
     <button class="nav-item active" data-view="home">
@@ -44,7 +53,11 @@
     </button>
     <button class="nav-item" data-view="checkin">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="m9 14 2 2 4-4"/></svg>
-      <span>Peso</span>
+      <span>Reportarse</span>
+    </button>
+    <button class="nav-item" data-view="info">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      <span>Guías</span>
     </button>
   </nav>
 
@@ -101,9 +114,23 @@
           <div class="stat-pill"><div class="val" id="hstat-tdee">—</div><div class="lbl">TDEE</div></div>
         </div>
 
-        <div class="card card-compact" style="margin-bottom:0.75rem;">
-          <div class="card-header"><span class="card-title">Progreso a peso ideal</span><span id="home-progress-label" style="font-weight:800;font-size:0.82rem;color:var(--orange-500);">0%</span></div>
+        <div class="card card-compact progress-card" style="margin-bottom:0.75rem;">
+          <div class="card-header"><span class="card-title">Progreso a peso ideal</span></div>
+          <div class="progress-value">
+            <span class="progress-pct" id="home-progress-label">0%</span>
+            <span class="progress-sub" id="home-progress-sub">—</span>
+          </div>
           <div class="progress-track"><div class="progress-fill" id="home-progress-fill" style="width:0%"></div></div>
+        </div>
+
+        <div class="card card-compact" id="home-bmi-card" style="margin-bottom:0.75rem;">
+          <div class="card-header"><span class="card-title">BMI</span><span id="home-bmi-badge" style="font-weight:800;font-size:0.8rem;padding:0.1rem 0.55rem;border-radius:999px;">—</span></div>
+          <div style="display:flex;align-items:baseline;gap:0.3rem;margin-bottom:0.3rem;">
+            <span id="home-bmi-value" style="font-size:1.8rem;font-weight:900;line-height:1;">—</span>
+            <span style="font-size:0.75rem;color:var(--stone-400);font-weight:600;">BMI</span>
+          </div>
+          <div class="bmi-meter" id="home-bmi-meter"><div class="bmi-marker" id="home-bmi-marker" style="left:10%"></div></div>
+          <div class="bmi-labels"><span>18.5 Normal</span><span>25 Sobrepeso</span><span>30 Obesidad</span></div>
         </div>
 
         <div class="card card-compact" style="margin-bottom:0.75rem;">
@@ -112,7 +139,7 @@
         </div>
 
         <div class="card card-compact">
-          <div class="card-header"><span class="card-title">Próximo pesaje</span></div>
+          <div class="card-header"><span class="card-title">Próximo reporte</span></div>
           <div id="home-next-checkin" style="font-size:0.85rem;color:var(--stone-500);">Cargando...</div>
         </div>
       </div>
@@ -147,6 +174,11 @@
         </div>
 
         <div class="card chart-card" style="margin-bottom:0.75rem;">
+          <div class="card-header"><span class="card-title">Cambio semanal</span></div>
+          <div class="chart-container"><canvas id="chart-weekly"></canvas></div>
+        </div>
+
+        <div class="card chart-card" style="margin-bottom:0.75rem;">
           <div class="card-header"><span class="card-title">% Perdido — Todos</span></div>
           <div class="chart-container"><canvas id="chart-group"></canvas></div>
         </div>
@@ -156,13 +188,30 @@
           <div class="chart-container"><canvas id="chart-bmi"></canvas></div>
         </div>
 
+        <div class="card chart-card" style="margin-bottom:0.75rem;display:none" id="card-chart-waist">
+          <div class="card-header"><span class="card-title">Cintura</span></div>
+          <div class="chart-container"><canvas id="chart-waist"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── INFO ─── -->
+    <section id="view-info" class="view hidden">
+      <div class="container view-content">
+        <h2 style="font-size:1.15rem;font-weight:800;margin-bottom:0.75rem;">Guías y conceptos</h2>
+
         <!-- BMI Explainer -->
         <div class="info-card">
-          <div class="info-title">¿Qué es el BMI?</div>
+          <div class="info-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1rem;height:1rem;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            ¿Qué es el BMI?
+          </div>
           <div class="info-body">
-            El <strong>Índice de Masa Corporal (BMI)</strong> relaciona tu peso con tu altura.
-            Se calcula como <strong>peso(kg) / altura(m)²</strong>.<br><br>
-            <strong>Categorías:</strong>
+            El <strong>Índice de Masa Corporal</strong> (BMI, Body Mass Index) relaciona tu peso con tu altura. Se calcula como:
+            <div style="background:var(--stone-100);padding:0.5rem;border-radius:0.5rem;margin:0.5rem 0;text-align:center;font-weight:800;font-size:0.9rem;">
+              BMI = peso(kg) / altura(m)<sup>2</sup>
+            </div>
+            <strong>Categorías (OMS):</strong>
           </div>
           <div class="bmi-meter" id="bmi-meter"><div class="bmi-marker" id="bmi-marker" style="left:50%"></div></div>
           <div class="bmi-labels"><span>18.5 Normal</span><span>25 Sobrepeso</span><span>30 Obesidad</span></div>
@@ -170,47 +219,97 @@
             Tu BMI actual: <strong id="bmi-current-val">—</strong> (<span id="bmi-current-cat">—</span>)
           </div>
           <div class="info-tip green" id="bmi-tip-normal" style="display:none;">
-            <strong>BMI Normal.</strong> Estás en un rango saludable. Sigue manteniendo buenos hábitos.
+            <strong>BMI Normal (18.5–24.9).</strong> Estás en el rango saludable según la OMS. Continúa manteniendo una dieta equilibrada y actividad física regular para conservar este estado.
           </div>
           <div class="info-tip orange" id="bmi-tip-overweight" style="display:none;">
-            <strong>Sobrepeso.</strong> Con una reducción del 5-10% de tu peso puedes mejorar
-            significativamente tu salud cardiovascular.
+            <strong>Sobrepeso (25–29.9).</strong> Según la OMS, el sobrepeso es el 4.º factor de riesgo más común para enfermedades crónicas. Reducir un 5–10% de tu peso corporal ya mejora significativamente la salud cardiovascular y metabólica.
           </div>
           <div class="info-tip red" id="bmi-tip-obese" style="display:none;">
-            <strong>Obesidad.</strong> Perder peso reduce el riesgo de enfermedades crónicas.
-            Un déficit de 300-500 kcal/día te ayudará a perder ~0.5 kg por semana.
+            <strong>Obesidad (30+).</strong> La obesidad es una enfermedad crónica reconocida por la OMS. Perder peso reduce el riesgo de diabetes tipo 2, hipertensión y enfermedades coronarias. Un déficit de 500–1000 kcal/día (recomendado por el NIH) te ayudará a perder 0.5–1 kg por semana.
           </div>
           <div class="info-tip orange" id="bmi-tip-underweight" style="display:none;">
-            <strong>Bajo peso.</strong> Consulta con un profesional de la salud para asegurar
-            una nutrición adecuada.
+            <strong>Bajo peso (&lt;18.5).</strong> Un IMC bajo puede indicar desnutrición u otros problemas de salud. Consulta con un profesional de la salud para asegurar una nutrición adecuada.
+          </div>
+          <div class="info-footnote">
+            Clasificación de la <strong>Organización Mundial de la Salud (OMS)</strong> y el <strong>National Heart, Lung, and Blood Institute (NIH)</strong>.
+            <a href="https://www.who.int/news-room/fact-sheets/detail/obesity-and-overweight" target="_blank" rel="noopener">who.int</a>
+            ·
+            <a href="https://www.nhlbi.nih.gov/health/educational/lose_wt/BMI/bmicalc.htm" target="_blank" rel="noopener">nhlbi.nih.gov</a>
+          </div>
+        </div>
+
+        <!-- Waist Explainer -->
+        <div class="info-card" id="waist-info-card">
+          <div class="info-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1rem;height:1rem;flex-shrink:0;"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/><path d="M8 6v12"/><path d="M16 6v12"/></svg>
+            Perímetro de cintura
+          </div>
+          <div class="info-body">
+            El <strong>perímetro de cintura</strong> mide la grasa abdominal (visceral), que es un predictor independiente de riesgo
+            incluso en personas con BMI normal. Según la <strong>CDC</strong> y el <strong>NIH</strong>, la grasa abdominal está directamente
+            asociada con resistencia a la insulina y síndrome metabólico.<br><br>
+            <strong>Rangos de riesgo:</strong>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin:0.5rem 0;">
+            <div style="background:var(--stone-100);border-radius:0.5rem;padding:0.5rem;text-align:center;">
+              <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;color:var(--stone-400);">Hombres</div>
+              <div style="font-weight:800;font-size:1rem;color:var(--orange-500);">≥ 102 cm</div>
+              <div style="font-size:0.7rem;color:var(--stone-400);">(40 pulgadas)</div>
+            </div>
+            <div style="background:var(--stone-100);border-radius:0.5rem;padding:0.5rem;text-align:center;">
+              <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;color:var(--stone-400);">Mujeres</div>
+              <div style="font-weight:800;font-size:1rem;color:var(--orange-500);">≥ 88 cm</div>
+              <div style="font-size:0.7rem;color:var(--stone-400);">(35 pulgadas)</div>
+            </div>
+          </div>
+          <div id="waist-user-status" style="display:none;margin:0.25rem 0 0.5rem;padding:0.4rem 0.6rem;border-radius:0.5rem;font-size:0.78rem;font-weight:700;"></div>
+          <div class="info-footnote">
+            Fuente: <strong>Centers for Disease Control (CDC)</strong> y <strong>National Institutes of Health (NIH)</strong>.
+            <a href="https://www.cdc.gov/diabetes/living-with/healthy-weight.html" target="_blank" rel="noopener">cdc.gov</a>
           </div>
         </div>
 
         <!-- TDEE Explainer -->
         <div class="info-card">
-          <div class="info-title">¿Qué es TDEE?</div>
+          <div class="info-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1rem;height:1rem;flex-shrink:0;"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+            ¿Qué es TDEE?
+          </div>
           <div class="info-body">
-            <strong>TDEE</strong> (Total Daily Energy Expenditure) son las <strong>calorías que quemas al día</strong>
-            incluyendo tus actividades. Está compuesto por:<br><br>
-            • <strong>BMR</strong> — Calorías en reposo total (tu motor basal)<br>
-            • <strong>Actividad física</strong> — Ejercicio y movimiento diario<br>
-            • <strong>Efecto térmico</strong> — Digestión de alimentos<br><br>
+            El <strong>TDEE</strong> (Total Daily Energy Expenditure) son las calorías que quemas al día. Está compuesto por:
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.3rem;margin:0.5rem 0;">
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;padding:0.3rem 0.5rem;background:var(--stone-100);border-radius:0.4rem;">
+              <span style="font-weight:700;">BMR (metabolismo basal)</span>
+              <span style="font-weight:800;color:var(--orange-500);">60–75%</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;padding:0.3rem 0.5rem;background:var(--stone-100);border-radius:0.4rem;">
+              <span style="font-weight:700;">Actividad física</span>
+              <span style="font-weight:800;color:var(--orange-500);">15–30%</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;padding:0.3rem 0.5rem;background:var(--stone-100);border-radius:0.4rem;">
+              <span style="font-weight:700;">Efecto térmico de los alimentos</span>
+              <span style="font-weight:800;color:var(--orange-500);">~10%</span>
+            </div>
+          </div>
+          <div class="info-body">
             <strong>Tu TDEE: <span id="tdee-current-val">—</span> kcal/día</strong>
+            (calculado con la fórmula <strong>Mifflin-St Jeor</strong>, la más precisa según el NIH)
           </div>
           <div class="info-tip green">
-            <strong>Para bajar de peso:</strong> consume <strong>300-500 kcal menos</strong> que tu TDEE.
-            Eso equivale a ~0.5 kg (1 lb) por semana. Déficit de 1000 kcal = ~1 kg/semana (no recomendado sin supervisión).
+            <strong>Para bajar de peso (recomendación NIH):</strong>
+            <br>• Déficit de <strong>500–1000 kcal/día</strong> → pérdida de <strong>0.5–1 kg (1–2 lb) por semana</strong>
+            <br>• Meta inicial: reducir un <strong>10%</strong> del peso corporal en 6 meses
+            <br>• Mínimo seguro: <strong>1200 kcal/día</strong> (mujeres) / <strong>1500 kcal/día</strong> (hombres)
+            <br>• No usar dietas &lt;800 kcal sin supervisión médica
           </div>
           <div class="info-tip orange">
             <strong>Para mantener:</strong> consume ≈ tu TDEE.<br>
-            <strong>Para aumentar músculo:</strong> consume 200-300 kcal más + entrenamiento de fuerza.
+            <strong>Para aumentar músculo:</strong> consume 200–300 kcal más + entrenamiento de fuerza.
           </div>
-          <div class="info-body" style="margin-top:0.4rem;">
-            <strong>Tips para aumentar tu TDEE (quemar más calorías):</strong><br>
-            • Camina 8,000-10,000 pasos al día<br>
-            • Entrena fuerza 3x/semana (el músculo quema calorías en reposo)<br>
-            • Duerme 7-8 horas (la falta de sueño reduce el metabolismo)<br>
-            • Come suficiente proteína (mayor efecto térmico que carbohidratos/grasas)
+          <div class="info-footnote">
+            Basado en guías del <strong>National Institutes of Health (NIH)</strong> y <strong>Academy of Nutrition and Dietetics</strong>.
+            <a href="https://www.nhlbi.nih.gov/health/heart-healthy-living/healthy-weight" target="_blank" rel="noopener">nhlbi.nih.gov</a>
           </div>
         </div>
       </div>
@@ -221,7 +320,7 @@
       <div class="container view-content">
         <div class="checkin-hero">
           <div class="big-number" id="checkin-last-weight">—</div>
-          <div class="big-label" id="checkin-last-label">Último registro</div>
+          <div class="big-label" id="checkin-last-label">Último reporte</div>
           <div class="checkin-streak" id="checkin-streak">Racha: —</div>
         </div>
 
@@ -229,21 +328,26 @@
           <div class="week-dot">—</div><div class="week-dot">—</div>
           <div class="week-dot">—</div><div class="week-dot">—</div>
           <div class="week-dot">—</div><div class="week-dot">—</div>
-          <div class="week-dot">—</div>
         </div>
 
         <div class="card" style="margin-bottom:0.75rem;">
-          <div class="card-header"><span class="card-title">Registrar peso</span></div>
+          <div class="card-header"><span class="card-title">Reporte semanal</span></div>
           <p style="font-size:0.8rem;color:var(--stone-400);margin-bottom:0.65rem;">
-            Pesate cada 3 días para tracking consistente.
+            Regístrate cada semana para tracking consistente.
           </p>
           <form id="checkin-form" style="display:flex;flex-direction:column;gap:0.5rem;">
             <div style="display:flex;gap:0.5rem;align-items:center;">
               <input class="form-input" id="checkin-weight" type="number" step="0.1" placeholder="Peso" min="1" style="flex:1;">
               <span id="checkin-unit-label" style="font-weight:700;font-size:0.85rem;color:var(--stone-500);flex-shrink:0;">kg</span>
             </div>
-            <input class="form-input" id="checkin-notes" type="text" placeholder="Nota opcional (ej: después del gym)" style="font-size:0.8rem;">
-            <button class="btn btn-primary" id="checkin-submit" type="submit">Registrar</button>
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+              <input class="form-input" id="checkin-waist" type="number" step="0.1" placeholder="Cintura (cm)" min="1" style="flex:1;">
+              <input class="form-input" id="checkin-bf" type="number" step="0.1" placeholder="% Grasa corporal" min="0" max="70" style="flex:1;">
+            </div>
+            <div style="font-size:0.78rem;font-weight:700;color:var(--stone-500);margin-top:0.25rem;">Actividad física de la semana</div>
+            <div class="activity-picker" id="activity-picker"></div>
+            <input class="form-input" id="checkin-notes" type="text" placeholder="Nota opcional" style="font-size:0.8rem;">
+            <button class="btn btn-primary" id="checkin-submit" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;display:block;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="m9 14 2 2 4-4"/></svg> Reportar</button>
           </form>
         </div>
 
@@ -252,18 +356,48 @@
           <div id="checkin-history"><div class="loading"><div class="spinner"></div></div></div>
         </div>
       </div>
+
+      <!-- Entry edit modal -->
+      <div id="entry-edit-modal" class="modal-overlay hidden">
+        <div class="modal">
+          <div class="modal-header">
+            <span class="card-title">Editar reporte</span>
+            <button class="btn btn-sm btn-ghost" id="entry-edit-close">✕</button>
+          </div>
+          <form id="entry-edit-form" style="display:flex;flex-direction:column;gap:0.5rem;">
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+              <input class="form-input" id="entry-edit-weight" type="number" step="0.1" placeholder="Peso" min="1" style="flex:1;">
+              <span id="entry-edit-unit-label" style="font-weight:700;font-size:0.85rem;color:var(--stone-500);flex-shrink:0;">kg</span>
+            </div>
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+              <input class="form-input" id="entry-edit-waist" type="number" step="0.1" placeholder="Cintura (cm)" min="1" style="flex:1;">
+              <input class="form-input" id="entry-edit-bf" type="number" step="0.1" placeholder="% Grasa corporal" min="0" max="70" style="flex:1;">
+            </div>
+            <div style="font-size:0.78rem;font-weight:700;color:var(--stone-500);margin-top:0.25rem;">Actividad física de la semana</div>
+            <div class="activity-picker" id="entry-edit-activity-picker"></div>
+            <input class="form-input" id="entry-edit-notes" type="text" placeholder="Nota opcional" style="font-size:0.8rem;">
+            <button class="btn btn-primary btn-block" id="entry-edit-save" type="submit">Guardar cambios</button>
+          </form>
+        </div>
+      </div>
     </section>
 
     <!-- ─── ADMIN ─── -->
     <section id="view-admin" class="view admin-page hidden no-bottom-nav">
       <div class="container">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
-          <h2 id="admin-title" style="margin-bottom:0;">Panel de Admin</h2>
-          <button class="btn btn-sm btn-secondary" id="admin-go-dashboard">Ir a la app</button>
+          <h2 style="margin-bottom:0;">Panel de Admin</h2>
+          <div style="display:flex;gap:0.4rem;">
+            <button class="btn btn-sm btn-secondary" id="admin-go-dashboard">Salir</button>
+          </div>
         </div>
 
-        <div class="admin-grid">
+        <div class="admin-tabs">
+          <button class="admin-tab active" data-admin-view="participants">Participantes</button>
+          <button class="admin-tab" data-admin-view="create">Crear</button>
+        </div>
 
+        <div id="admin-view-participants" class="admin-subview">
           <div class="card">
             <div class="card-header"><span class="card-title">Participantes</span></div>
             <div style="overflow-x:auto;">
@@ -275,15 +409,19 @@
                     <th style="text-align:left;padding:0.35rem 0;">Peso</th>
                     <th style="text-align:left;padding:0.35rem 0;">%</th>
                     <th style="text-align:right;padding:0.35rem 0;"></th>
+                    <th style="text-align:right;padding:0.35rem 0;"></th>
+                    <th style="text-align:right;padding:0.35rem 0;"></th>
                   </tr>
                 </thead>
-                <tbody id="admin-participants"><tr><td colspan="5" class="loading"><div class="spinner"></div></td></tr></tbody>
+                <tbody id="admin-participants"><tr><td colspan="7" class="loading"><div class="spinner"></div></td></tr></tbody>
               </table>
             </div>
           </div>
+        </div>
 
+        <div id="admin-view-create" class="admin-subview hidden">
           <div class="card">
-            <div class="card-header"><span class="card-title">Nuevo</span></div>
+            <div class="card-header"><span class="card-title">Nuevo Participante</span></div>
             <form id="admin-create-form">
               <div class="form-group"><label>Nickname</label><input class="form-input" id="admin-nickname" type="text" placeholder="Nickname único"></div>
               <div class="form-group"><label>Contraseña</label><input class="form-input" id="admin-password" type="password" placeholder="••••"></div>
@@ -316,7 +454,46 @@
               <button class="btn btn-primary btn-block" id="admin-create-btn" type="submit">Crear</button>
             </form>
           </div>
+        </div>
+      </div>
 
+      <!-- Edit modal -->
+      <div id="admin-edit-modal" class="modal-overlay hidden">
+        <div class="modal">
+          <div class="modal-header">
+            <span class="card-title" id="admin-edit-title">Editar</span>
+            <button class="btn btn-sm btn-ghost" id="admin-edit-close">✕</button>
+          </div>
+          <form id="admin-edit-form">
+            <div class="form-group"><label>Nickname</label><input class="form-input" id="edit-nickname" type="text"></div>
+            <div class="form-row">
+              <div class="form-group"><label>Edad</label><input class="form-input" id="edit-age" type="number"></div>
+              <div class="form-group"><label>Sexo</label>
+                <div style="display:flex;gap:0.5rem;margin-top:0.25rem;">
+                  <label style="display:flex;align-items:center;gap:0.2rem;font-size:0.8rem;font-weight:600;cursor:pointer;"><input type="radio" name="edit-sex" value="male"> M</label>
+                  <label style="display:flex;align-items:center;gap:0.2rem;font-size:0.8rem;font-weight:600;cursor:pointer;"><input type="radio" name="edit-sex" value="female"> F</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group"><label>Altura (m)</label><input class="form-input" id="edit-height" type="number" step="0.01" min="0.5" max="3"></div>
+            <div class="form-group">
+              <label>Peso inicial</label>
+              <div class="form-toggle" style="margin-bottom:0.25rem;">
+                <label><input type="radio" name="edit-weight-mode" value="kg" checked> kg</label>
+                <label><input type="radio" name="edit-weight-mode" value="lbs"> lbs</label>
+              </div>
+              <input class="form-input" id="edit-weight" type="number" step="0.1" min="1" max="800">
+            </div>
+            <div class="form-group"><label>Actividad</label><select class="form-select" id="edit-activity"><option value="">...</option><option value="sedentary">Sedentario</option><option value="light">Ligero</option><option value="moderate">Moderado</option><option value="heavy">Intenso</option><option value="very_heavy">Muy intenso</option></select></div>
+            <div class="form-group">
+              <label>Unidad</label>
+              <div class="form-toggle">
+                <label><input type="radio" name="edit-unit-pref" value="metric" checked> Métrico</label>
+                <label><input type="radio" name="edit-unit-pref" value="imperial"> Imperial</label>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-block" id="admin-edit-save" type="submit">Guardar</button>
+          </form>
         </div>
       </div>
     </section>
