@@ -78,7 +78,7 @@ function showView(viewId) {
   if (view) view.classList.remove('hidden');
   state.currentView = viewId;
 
-  const isLoggedIn = state.user && (viewId === 'home' || viewId === 'leaderboard' || viewId === 'stats' || viewId === 'checkin' || viewId === 'info');
+  const isLoggedIn = state.user && (viewId === 'home' || viewId === 'leaderboard' || viewId === 'rules' || viewId === 'stats' || viewId === 'checkin' || viewId === 'info');
   const navbar = $('#navbar');
   const bottomNav = $('#bottom-nav');
 
@@ -243,6 +243,8 @@ async function renderHome() {
 
   // Progress
   const pctColor = progress < 0 ? '#ef4444' : progress < 25 ? '#f97316' : progress < 50 ? '#eab308' : progress < 75 ? '#22c55e' : '#16a34a';
+  $('#home-current-weight').textContent = CALC.formatWeight(currentLbs, up);
+  $('#home-ideal-weight').textContent = CALC.formatWeight(idealLbs, up);
   $('#home-progress-label').textContent = `${progress.toFixed(0)}%`;
   $('#home-progress-label').style.color = pctColor;
   const fill = $('#home-progress-fill');
@@ -289,6 +291,109 @@ async function renderHome() {
   }
 
   updateReportBanner(entries);
+  renderTips(entries);
+}
+
+// ─── Daily Tips ───
+
+const TIPS = [
+  // ── TDEE tips ──
+  { cat: 'tdee', icon: 'tdee', text: (p, tdee, bmi) => `Tu cuerpo gasta aproximadamente <strong>${tdee.toLocaleString()} kcal/día</strong> (TDEE). Consumir entre <strong>${(tdee - 500).toLocaleString()}–${(tdee - 1000).toLocaleString()} kcal/día</strong> te haría perder 0.5–1 kg por semana, según el NIH.` },
+  { cat: 'tdee', icon: 'tdee', text: () => 'El TDEE se compone de: metabolismo basal (60–75%), actividad física (15–30%) y efecto térmico de los alimentos (~10%). Aumentar tu actividad diaria es la forma más efectiva de incrementarlo.' },
+  { cat: 'tdee', icon: 'tdee', text: () => 'Comer por debajo de <strong>1200 kcal/día</strong> (mujeres) o <strong>1500 kcal/día</strong> (hombres) puede ralentizar tu metabolismo y causar pérdida muscular. No bajes de esos mínimos sin supervisión médica.' },
+  { cat: 'tdee', icon: 'tdee', text: () => 'El efecto térmico de los alimentos (TEF) representa ~10% del TDEE. Las proteínas tienen el TEF más alto (20–30%), seguidas de carbohidratos (5–10%) y grasas (0–3%).' },
+  { cat: 'tdee', icon: 'tdee', text: () => 'Caminar 10,000 pasos al día quema entre 300–500 kcal adicionales. Incorporar una caminata de 30 min después de comer ayuda a la digestión y mejora el control de glucosa.' },
+  { cat: 'tdee', icon: 'tdee', text: (p, tdee) => `Según tu nivel de actividad (${p.activity_level}), tu TDEE es de <strong>${tdee.toLocaleString()} kcal</strong>. Si aumentas tu nivel de actividad, podrías elevar tu TDEE en 200–500 kcal sin cambiar tu dieta.` },
+  { cat: 'tdee', icon: 'tdee', text: () => 'El músculo quema más calorías en reposo que la grasa (~6 kcal/kg vs ~2 kcal/kg). Incorporar entrenamiento de fuerza 2–3 veces por semana ayuda a mantener tu metabolismo elevado.' },
+  { cat: 'tdee', icon: 'tdee', text: () => 'Un déficit de 500 kcal/día es considerado moderado y sostenible. Déficits mayores a 1000 kcal/día pueden aumentar el riesgo de pérdida muscular y deficiencias nutricionales.' },
+
+  // ── BMI tips ──
+  { cat: 'bmi', icon: 'bmi', condition: (p, tdee, bmi) => bmi < 18.5, text: () => 'Tu BMI indica bajo peso. Un BMI menor a 18.5 puede estar asociado con deficiencias nutricionales. Consulta con un profesional para asegurar una ingesta calórica y proteica adecuada.' },
+  { cat: 'bmi', icon: 'bmi', condition: (p, tdee, bmi) => bmi >= 18.5 && bmi < 25, text: () => 'Tu BMI está en el rango normal (18.5–24.9). Según la OMS, este rango se asocia con menor riesgo de enfermedades crónicas. Enfócate en mantener hábitos saludables.' },
+  { cat: 'bmi', icon: 'bmi', condition: (p, tdee, bmi) => bmi >= 25 && bmi < 30, text: () => 'Tu BMI indica sobrepeso (25–29.9). Reducir un 5–10% de tu peso corporal ya mejora significativamente tu salud cardiovascular y metabólica, según el NIH.' },
+  { cat: 'bmi', icon: 'bmi', condition: (p, tdee, bmi) => bmi >= 30, text: () => 'Tu BMI indica obesidad (≥30). La OMS reconoce la obesidad como una enfermedad crónica. Perder incluso un 5% de tu peso reduce el riesgo de diabetes tipo 2 e hipertensión.' },
+  { cat: 'bmi', icon: 'bmi', text: () => 'El BMI es una herramienta de cribado, no un diagnóstico. Personas con mucha masa muscular pueden tener un BMI elevado sin tener exceso de grasa corporal.' },
+
+  // ── Waist tips ──
+  { cat: 'waist', icon: 'waist', condition: (p, tdee, bmi, entries) => { const w = entries.find(e => e.waist_cm); return w && w.waist_cm >= (p.sex === 'male' ? 102 : 88); }, text: (p, tdee, bmi, entries) => { const w = entries.find(e => e.waist_cm); const threshold = p.sex === 'male' ? 102 : 88; return `Tu cintura (${w.waist_cm} cm) supera el umbral de riesgo (${threshold} cm). La grasa abdominal es un predictor independiente de enfermedades cardiovasculares y diabetes tipo 2 (CDC, NIH).`; } },
+  { cat: 'waist', icon: 'waist', condition: (p, tdee, bmi, entries) => { const w = entries.find(e => e.waist_cm); return w && w.waist_cm < (p.sex === 'male' ? 102 : 88); }, text: (p, tdee, bmi, entries) => { const w = entries.find(e => e.waist_cm); const threshold = p.sex === 'male' ? 102 : 88; return `Tu cintura (${w.waist_cm} cm) está por debajo del umbral de riesgo (${threshold} cm). Mantener este nivel reduce significativamente el riesgo de síndrome metabólico.`; } },
+  { cat: 'waist', icon: 'waist', text: () => 'La circunferencia de cintura mide la grasa visceral, que es metabólicamente más activa que la grasa subcutánea. Reducir 5–10 cm de cintura se asocia con mejoras significativas en marcadores de salud.' },
+
+  // ── Progress tips ──
+  { cat: 'progress', icon: 'progress', condition: (p, tdee, bmi, entries, progress) => entries.length > 0 && progress >= 100, text: () => '¡Has alcanzado tu peso ideal! Ahora enfócate en mantenerlo. El NIH recomienda pesarse semanalmente y mantener el mismo nivel de actividad para evitar recuperar el peso perdido.' },
+  { cat: 'progress', icon: 'progress', condition: (p, tdee, bmi, entries, progress) => entries.length > 0 && progress >= 50 && progress < 100, text: (p, tdee, bmi, entries, progress) => `¡Excelente! Has completado el <strong>${progress.toFixed(0)}%</strong> del camino a tu peso ideal. Sigue así — la constancia es la clave.` },
+  { cat: 'progress', icon: 'progress', condition: (p, tdee, bmi, entries, progress) => entries.length > 0 && progress >= 25 && progress < 50, text: (p, tdee, bmi, entries, progress) => `Vas por buen camino: <strong>${progress.toFixed(0)}%</strong> de tu meta. Recuerda que perder peso muy rápido (>1 kg/semana) puede aumentar la pérdida muscular.` },
+  { cat: 'progress', icon: 'progress', condition: (p, tdee, bmi, entries, progress) => entries.length > 0 && progress >= 0 && progress < 25, text: (p, tdee, bmi, entries, progress) => `Has comenzado tu viaje: <strong>${progress.toFixed(0)}%</strong> hacia tu peso ideal. Los primeros cambios son los más importantes — establece una rutina sostenible.` },
+  { cat: 'progress', icon: 'progress', condition: (p, tdee, bmi, entries, progress) => entries.length > 0 && progress < 0, text: () => 'Tu peso actual se ha alejado de tu peso ideal. No te desanimes — analiza qué cambios en tu rutina pudieron afectar y retoma el plan. La consistencia es más importante que la perfección.' },
+
+  // ── Nutrition tips ──
+  { cat: 'nutrition', icon: 'nutrition', text: () => 'Aumentar el consumo de proteína magra (pollo, pescado, huevos, legumbres) ayuda a preservar masa muscular durante el déficit calórico. Apunta a 1.6–2.2 g de proteína por kg de peso corporal.' },
+  { cat: 'nutrition', icon: 'nutrition', text: () => 'Las verduras de hoja verde y los vegetales ricos en fibra (brócoli, espinaca, coliflor) aportan volumen a tus comidas con muy pocas calorías. Llena la mitad de tu plato con ellos.' },
+  { cat: 'nutrition', icon: 'nutrition', text: () => 'Beber agua antes de las comidas puede reducir la ingesta calórica en un 13%, según estudios. Apunta a 2–3 litros de agua al día.' },
+  { cat: 'nutrition', icon: 'nutrition', text: () => 'Dormir 7–9 horas es crucial para la pérdida de peso. La falta de sueño aumenta el cortisol y la grelina (hormona del hambre), lo que dificulta mantener un déficit calórico.' },
+  { cat: 'nutrition', icon: 'nutrition', text: () => 'Las dietas muy restrictivas suelen fallar a largo plazo. El NIH recomienda un déficit de 500–1000 kcal/día combinado con cambios sostenibles en el estilo de vida.' },
+  { cat: 'nutrition', icon: 'nutrition', text: () => 'Comer conscientemente (sin pantallas, masticando lento) puede reducir naturalmente la ingesta calórica. El cerebro tarda ~20 minutos en registrar la saciedad.' },
+
+  // ── Activity tips ──
+  { cat: 'activity', icon: 'activity', text: () => 'El ejercicio aeróbico (correr, nadar, bici) quema calorías durante la actividad. El entrenamiento de fuerza (pesas, calistenia) eleva el metabolismo basal por horas después del ejercicio.' },
+  { cat: 'activity', icon: 'activity', text: () => 'La combinación de cardio + fuerza es más efectiva para la pérdida de grasa que cualquiera de los dos por separado. Ideal: 3 días de fuerza + 2–3 días de cardio.' },
+  { cat: 'activity', icon: 'activity', text: () => 'El NEAT (Non-Exercise Activity Thermogenesis) —actividades cotidianas como caminar, limpiar, subir escaleras— puede representar hasta 500 kcal/día adicionales. Pequeños cambios suman.' },
+  { cat: 'activity', icon: 'activity', text: () => 'El entrenamiento HIIT (intervalos de alta intensidad) quema más calorías en menos tiempo y produce el "afterburn" (EPOC): tu cuerpo sigue quemando calorías hasta 24 horas después.' },
+
+  // ── Motivation tips ──
+  { cat: 'motivation', icon: 'motivation', text: () => 'La consistencia supera a la intensidad. Es mejor hacer ejercicio moderado 5 días a la semana que uno muy intenso que no puedas mantener.' },
+  { cat: 'motivation', icon: 'motivation', text: () => 'Llevar un registro semanal (como haces aquí) es una de las estrategias más efectivas para mantener el rumbo. ¡Sigue reportándote!' },
+  { cat: 'motivation', icon: 'motivation', text: () => 'Celebra las pequeñas victorias: cada kilo perdido, cada semana consistente, cada hábito nuevo. El cambio real se construye con pequeñas decisiones diarias.' },
+  { cat: 'motivation', icon: 'motivation', text: () => 'Compartir tu progreso con amigos (o competir en el ranking) aumenta la adherencia. El apoyo social es uno de los predictores más fuertes de éxito en cambios de estilo de vida.' },
+  { cat: 'motivation', icon: 'motivation', condition: (p, tdee, bmi, entries) => entries.length >= 4, text: () => 'Llevas al menos un mes reportándote — ¡eso es compromiso! Las personas que registran su peso semanalmente tienen significativamente más éxito en mantener la pérdida de peso a largo plazo.' },
+];
+
+function getApplicableTips() {
+  if (!state.user || state.userType !== 'participant') return [];
+  const p = state.user;
+  const entries = state.weightHistory || [];
+  const currentLbs = entries.length > 0 ? entries[0].weight_lbs : p.starting_weight_lbs;
+  const bmi = CALC.bmi(currentLbs, p.height_cm);
+  const tdee = CALC.tdee(p.sex, currentLbs, p.height_cm, p.age, p.activity_level);
+  const idealLbs = CALC.idealWeight(p.sex, p.height_cm);
+  const progress = CALC.progressToIdeal(p.starting_weight_lbs, currentLbs, idealLbs);
+
+  return TIPS.filter(tip => !tip.condition || tip.condition(p, tdee, bmi, entries, progress));
+}
+
+function renderTips(entries) {
+  const body = $('#home-tips-body');
+  const count = $('#home-tips-count');
+  if (!body || !count) return;
+  const tips = getApplicableTips();
+  count.textContent = tips.length;
+
+  // Pick up to 5 random tips that apply
+  const shuffled = tips.sort(() => Math.random() - 0.5);
+  const selected = shuffled.slice(0, 5);
+
+  body.innerHTML = selected.map(tip => {
+    const p = state.user;
+    const entries = state.weightHistory || [];
+    const currentLbs = entries.length > 0 ? entries[0].weight_lbs : p.starting_weight_lbs;
+    const bmi = CALC.bmi(currentLbs, p.height_cm);
+    const tdee = CALC.tdee(p.sex, currentLbs, p.height_cm, p.age, p.activity_level);
+    const idealLbs = CALC.idealWeight(p.sex, p.height_cm);
+    const progress = CALC.progressToIdeal(p.starting_weight_lbs, currentLbs, idealLbs);
+    const html = tip.text(p, tdee, bmi, entries, progress);
+    return `<div class="tip-item"><svg class="tip-icon ${tip.icon}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><span>${html}</span></div>`;
+  }).join('');
+}
+
+function initTips() {
+  const toggle = $('#home-tips-toggle');
+  const body = $('#home-tips-body');
+  if (!toggle || !body) return;
+  toggle.addEventListener('click', () => {
+    const card = toggle.closest('.tips-card');
+    const isOpen = card.classList.toggle('open');
+    body.classList.toggle('hidden', !isOpen);
+  });
 }
 
 // ─── Report Banner ───
@@ -621,6 +726,14 @@ function renderStats() {
   } else {
     $('#card-chart-waist').style.display = 'none';
   }
+}
+
+// ════════════════════════════════════════════
+// RULES
+// ════════════════════════════════════════════
+
+function renderRules() {
+  // Static content — nothing to compute
 }
 
 // ════════════════════════════════════════════
@@ -1130,6 +1243,7 @@ async function handleUnitToggle() {
   const view = state.currentView;
   if (view === 'home') await renderHome();
   else if (view === 'leaderboard') await renderLeaderboard();
+  else if (view === 'rules') renderRules();
   else if (view === 'stats') renderStats();
   else if (view === 'checkin') await renderCheckin();
   else if (view === 'info') await renderInfo();
@@ -1164,6 +1278,7 @@ function initAuthTabs() {
 document.addEventListener('DOMContentLoaded', () => {
   initAuthTabs();
   initEntryEditModal();
+  initTips();
 
   // Forms
   $('#setup-form')?.addEventListener('submit', handleAdminSetup);
@@ -1248,6 +1363,7 @@ document.addEventListener('DOMContentLoaded', () => {
       showView(view);
       if (view === 'home') await renderHome();
       else if (view === 'leaderboard') await renderLeaderboard();
+      else if (view === 'rules') renderRules();
       else if (view === 'stats') renderStats();
       else if (view === 'checkin') await renderCheckin();
       else if (view === 'info') await renderInfo();
@@ -1270,3 +1386,30 @@ document.addEventListener('DOMContentLoaded', () => {
     checkInitialSetup();
   }
 });
+
+// ─── Console helpers (password reset) ───
+
+async function resetPassword(nickname, newPassword) {
+  try {
+    const { data: parts } = await getSupabase()
+      .from('participants')
+      .select('id')
+      .eq('nickname', nickname);
+    if (parts && parts.length > 0) {
+      await updateParticipantPassword(parts[0].id, newPassword);
+      console.log(`✅ Contraseña de "${nickname}" cambiada a "${newPassword}"`);
+    } else {
+      const { data: admins } = await getSupabase()
+        .from('admin')
+        .select('id')
+        .eq('username', nickname);
+      if (admins && admins.length > 0) {
+        const hash = await hashPassword(newPassword);
+        await getSupabase().from('admin').update({ password_hash: hash }).eq('id', admins[0].id);
+        console.log(`✅ Contraseña de admin "${nickname}" cambiada a "${newPassword}"`);
+      } else {
+        console.log(`❌ No se encontró "${nickname}"`);
+      }
+    }
+  } catch (e) { console.log('❌ Error:', e.message || e); }
+}
