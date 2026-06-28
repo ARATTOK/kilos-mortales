@@ -48,17 +48,19 @@ body {
   background: var(--gradient-bg);
   color: var(--stone-800);
   min-height: 100vh;
-  min-height: -webkit-fill-available;
   line-height: 1.5;
-  padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
 }
-body.no-bottom-nav { padding-bottom: 0; }
+
+main#app { flex: 1; display: flex; flex-direction: column; }
+main#app > .view { flex: 1; }
 a { color: var(--orange-500); text-decoration: none; }
 a:hover { color: var(--orange-600); }
 
 .hidden { display: none !important; }
 .text-gradient { background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.container { width: 100%; max-width: 1024px; margin: 0 auto; padding: 0 1.25rem; }
+.container { width: 100%; max-width: 1024px; margin: 0 auto; padding: 0 1.5rem; }
 .text-center { text-align: center; }
 
 /* ─── Navbar ─── */
@@ -106,7 +108,7 @@ a:hover { color: var(--orange-600); }
 
 /* ─── Bottom Tab Navigation ─── */
 .bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0;
+  flex-shrink: 0;
   height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
   background: rgba(255,255,255,0.96);
@@ -221,7 +223,7 @@ a:hover { color: var(--orange-600); }
 .view-content { padding: 0.75rem 0 0; }
 
 /* ══════ AUTH ══════ */
-.auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.auth-page { display: flex; align-items: center; justify-content: center; padding: 1rem; }
 .auth-card {
   width: 100%; max-width: 420px;
   background: rgba(255,255,255,0.85); backdrop-filter: blur(16px);
@@ -447,7 +449,6 @@ a:hover { color: var(--orange-600); }
   .ranking-hero .hero-pct { font-size: 1.2rem; }
   .toast-container { left: 1rem; }
   .toast { max-width: 100%; font-size: 0.78rem; }
-  .container { padding: 0 1.5rem; }
   .home-header h2 { font-size: 1.1rem; }
   .view-content { padding: 1rem 0 0; }
   .stat-pill { padding: 0.65rem 0.35rem; }
@@ -467,7 +468,6 @@ a:hover { color: var(--orange-600); }
   .navbar .brand { font-size: 0.8rem; }
   .navbar .nav-user { max-width: 70px; font-size: 0.7rem; }
   .ranking-hero .hero-rank { font-size: 1.7rem; }
-  .container { padding: 0 1.25rem; }
   .card { padding: 0.85rem 0.9rem; }
   .view-content { padding: 0.75rem 0 0; }
 }
