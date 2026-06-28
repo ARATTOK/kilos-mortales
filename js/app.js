@@ -71,10 +71,12 @@ function showView(viewId) {
     navbar.classList.remove('hidden');
     bottomNav.classList.add('hidden');
     document.body.classList.add('no-bottom-nav');
+    $('#nav-username').textContent = 'Admin';
   } else if (isLoggedIn) {
     navbar.classList.remove('hidden');
     bottomNav.classList.remove('hidden');
     document.body.classList.remove('no-bottom-nav');
+    $('#nav-username').textContent = state.user?.nickname || '';
     updateUnitToggle();
   } else {
     navbar.classList.add('hidden');
@@ -144,7 +146,7 @@ async function handleLogin(e) {
       saveSession();
       showView('admin');
       await renderAdminPanel();
-      showToast(`Bienvenido ${user.username}`, 'success');
+      showToast('Bienvenido Admin', 'success');
     } else {
       const user = await participantLogin(username, password);
       state.user = user; state.userType = 'participant';
@@ -623,7 +625,7 @@ async function handleCheckIn(e) {
 
 async function renderAdminPanel() {
   if (!state.user || state.userType !== 'admin') return;
-  $('#admin-title').textContent = `Panel · ${state.user.username}`;
+  $('#admin-title').textContent = 'Panel · Admin';
 
   try {
     const participants = await getAllParticipants();
