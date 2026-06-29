@@ -90,22 +90,25 @@ function showView(viewId) {
   const bottomNav = $('#bottom-nav');
   const footer = $('#site-footer');
 
+  document.body.classList.add('has-navbar');
   if (viewId === 'admin') {
-    navbar.classList.remove('hidden');
+    navbar.querySelector('.nav-right').classList.remove('hidden');
+    document.body.classList.remove('has-bottom-nav');
     bottomNav.classList.add('hidden');
     footer.classList.add('hidden');
     document.body.classList.add('no-bottom-nav');
     $('#nav-username').textContent = 'Admin';
     updateToggles();
   } else if (isLoggedIn) {
-    navbar.classList.remove('hidden');
+    navbar.querySelector('.nav-right').classList.remove('hidden');
+    document.body.classList.add('has-bottom-nav');
     bottomNav.classList.remove('hidden');
     footer.classList.remove('hidden');
     document.body.classList.remove('no-bottom-nav');
     $('#nav-username').textContent = state.user?.nickname || '';
     updateToggles();
   } else {
-    navbar.classList.add('hidden');
+    document.body.classList.remove('has-bottom-nav');
     bottomNav.classList.add('hidden');
     footer.classList.add('hidden');
     document.body.classList.add('no-bottom-nav');

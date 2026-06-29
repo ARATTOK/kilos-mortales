@@ -53,6 +53,12 @@ body {
   flex-direction: column;
   padding: 0 10px;
 }
+body.has-navbar {
+  padding-top: calc(3.25rem + env(safe-area-inset-top, 0px));
+}
+body.has-navbar.has-bottom-nav {
+  padding-top: calc(3.25rem + var(--bottom-nav-height) + env(safe-area-inset-top, 0px));
+}
 
 main#app { flex: 1; display: flex; flex-direction: column; background: var(--gradient-bg); border-radius: 0 0 var(--radius-xl) var(--radius-xl); overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.04); }
 main#app > .view { flex: 1; }
@@ -66,14 +72,12 @@ a:hover { color: var(--orange-600); }
 
 /* ─── Navbar ─── */
 .navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   background: #fff;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--orange-200);
-  position: sticky; top: 0; z-index: 100;
   padding-top: env(safe-area-inset-top, 0);
-  margin: 0 -10px;
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 .navbar .container { display: flex; align-items: center; justify-content: space-between; height: 3.25rem; }
 .navbar .brand { font-size: 1.05rem; font-weight: 800; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0; }
@@ -195,18 +199,14 @@ a:hover { color: var(--orange-600); }
 
 /* ─── Bottom Tab Navigation ─── */
 .bottom-nav {
-  flex-shrink: 0;
-  height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  position: fixed; top: calc(3.25rem + env(safe-area-inset-top, 0px)); left: 0; right: 0; z-index: 99;
+  height: var(--bottom-nav-height);
   background: #fff;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(249,115,22,0.12);
-  box-shadow: 0 -2px 24px rgba(0,0,0,0.04);
+  border-bottom: 1px solid rgba(249,115,22,0.12);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
   display: flex; align-items: center; justify-content: space-around;
-  z-index: 200;
-  margin: 0 -10px;
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
 }
 .bottom-nav .nav-item {
   display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
@@ -758,7 +758,7 @@ a:hover { color: var(--orange-600); }
 .admin-subview.hidden { display: none; }
 
 /* ══════ TOAST / LOADING / EMPTY ══════ */
-.toast-container { position: fixed; bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 0.75rem); right: 1rem; z-index: 999; display: flex; flex-direction: column; gap: 0.4rem; }
+.toast-container { position: fixed; bottom: 1rem; right: 1rem; z-index: 999; display: flex; flex-direction: column; gap: 0.4rem; }
 .toast { padding: 0.65rem 1.1rem; border-radius: var(--radius-md); font-size: 0.82rem; font-weight: 600; font-family: var(--font); color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.12); animation: slideIn 0.3s ease-out; max-width: 320px; }
 .toast.success { background: #16a34a; }
 .toast.error { background: var(--pink-500); }
@@ -802,6 +802,8 @@ a:hover { color: var(--orange-600); }
   .stat-pill .lbl { font-size: 0.55rem; }
   .card { padding: 1rem 1.1rem; }
   .navbar .container { height: 3rem; }
+  .bottom-nav { top: calc(3rem + env(safe-area-inset-top, 0px)); }
+  body.has-navbar.has-bottom-nav { padding-top: calc(3rem + 3.5rem); padding-top: calc(3rem + 3.5rem + env(safe-area-inset-top, 0px)); }
   :root { --bottom-nav-height: 3.5rem; }
   .auth-card { padding: 1.5rem; border-radius: var(--radius-xl); }
   .auth-card .auth-logo h1 { font-size: 1.5rem; }
