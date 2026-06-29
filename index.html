@@ -440,8 +440,11 @@
             </div>
             <div class="checkin-row">
               <div class="checkin-field">
-                <label class="checkin-label">Cintura (cm)</label>
-                <input class="form-input" id="checkin-waist" type="number" step="0.1" placeholder="Opcional" min="1">
+                <label class="checkin-label" id="checkin-waist-label">Cintura (cm)</label>
+                <div class="checkin-input-group">
+                  <input class="form-input" id="checkin-waist" type="number" step="0.1" placeholder="Opcional" min="0" max="200">
+                  <span class="checkin-unit" id="checkin-waist-unit-label">cm</span>
+                </div>
               </div>
               <div class="checkin-field">
                 <label class="checkin-label">% Grasa corporal</label>
@@ -480,7 +483,10 @@
               <span id="entry-edit-unit-label" style="font-weight:700;font-size:0.85rem;color:var(--stone-500);flex-shrink:0;">kg</span>
             </div>
             <div style="display:flex;gap:0.5rem;align-items:center;">
-              <input class="form-input" id="entry-edit-waist" type="number" step="0.1" placeholder="Cintura (cm)" min="1" style="flex:1;">
+              <div style="display:flex;gap:0.3rem;align-items:center;flex:1;">
+                <input class="form-input" id="entry-edit-waist" type="number" step="0.1" placeholder="Cintura" min="0" style="flex:1;">
+                <span id="entry-edit-waist-unit" style="font-weight:700;font-size:0.82rem;color:var(--stone-500);flex-shrink:0;">cm</span>
+              </div>
               <input class="form-input" id="entry-edit-bf" type="number" step="0.1" placeholder="% Grasa corporal" min="0" max="70" style="flex:1;">
             </div>
             <div style="font-size:0.78rem;font-weight:700;color:var(--stone-500);margin-top:0.25rem;">Actividad física de la semana</div>

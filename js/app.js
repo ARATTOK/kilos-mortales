@@ -16,14 +16,18 @@ const $$ = (sel) => document.querySelectorAll(sel);
 const STORAGE_KEY = 'km_session';
 
 const ACTIVITIES = [
-  { id: 'correr', label: 'Correr', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M10 10l-2 8 3-1 1-4 3 2 2-6"/></svg>' },
-  { id: 'caminar', label: 'Caminar', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M9 9l1 8 3-1 2 4"/></svg>' },
-  { id: 'pesas', label: 'Pesas', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="3" height="8" rx="1"/><rect x="17" y="8" width="3" height="8" rx="1"/><line x1="7" y1="12" x2="17" y2="12"/></svg>' },
-  { id: 'yoga', label: 'Yoga', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v6l-5 8"/><path d="M17 20l-5-8"/></svg>' },
-  { id: 'bici', label: 'Bici', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3"/><circle cx="18" cy="16" r="3"/><path d="M6 13l4-4 2 1 3-2 2 5"/></svg>' },
-  { id: 'nadar', label: 'Nadar', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="5" r="2"/><path d="M3 16c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M3 20c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg>' },
-  { id: 'deporte', label: 'Deporte', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><path d="M5 12h14M12 5a8 8 0 0 1 3 6 8 8 0 0 1-3 6 8 8 0 0 1-3-6 8 8 0 0 1 3-6"/></svg>' },
-  { id: 'hogar', label: 'Hogar', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l2-9 2 9h10"/><path d="M8 20h8"/><path d="M10 12l1 8"/><path d="M14 12l-1 8"/></svg>' }
+  { cat: 'exercise', id: 'correr', label: 'Correr', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M11 8l-2 6 3-1 1 6"/><path d="M5 13l5-1 1 3"/><path d="M15 10l4-2"/></svg>' },
+  { cat: 'exercise', id: 'caminar', label: 'Caminar', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M10 8l-1 6 3-1 1 5"/><path d="M6 13l4-1"/><path d="M15 12l3-2"/></svg>' },
+  { cat: 'exercise', id: 'pesas', label: 'Pesas', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="8" y1="9" x2="16" y2="15"/><line x1="8" y1="15" x2="16" y2="9"/></svg>' },
+  { cat: 'exercise', id: 'yoga', label: 'Yoga', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 8v4l-5 5"/><path d="M17 17l-5-5"/><path d="M6 14h12"/></svg>' },
+  { cat: 'exercise', id: 'bici', label: 'Bici', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="16" r="3"/><circle cx="17" cy="16" r="3"/><path d="M10 16l2-7h4"/><path d="M7 16l4-3 3 3"/><path d="M12 9l3 3-3 3"/></svg>' },
+  { cat: 'exercise', id: 'nadar', label: 'Nadar', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M11 8l-1 4h4l1 4"/><path d="M2 16c2-1 4-1 6 0s4 1 6 0 4-1 6 0"/><path d="M2 20c2-1 4-1 6 0s4 1 6 0 4-1 6 0"/></svg>' },
+  { cat: 'exercise', id: 'deporte', label: 'Deporte', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 4v16"/><path d="M4 12h16"/><circle cx="12" cy="12" r="3"/></svg>' },
+  { cat: 'exercise', id: 'hogar', label: 'Hogar', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h2l7-7 7 7h2"/><path d="M8 21v-8a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v8"/></svg>' },
+  { cat: 'nutrition', id: 'no-soda', label: 'Sin Coca', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12l-1 4H7Z"/><path d="M7 6v14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6"/><line x1="3" y1="3" x2="21" y2="21"/></svg>' },
+  { cat: 'nutrition', id: 'no-bread', label: 'Sin Pan', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11c0-4 3-7 7-7s7 3 7 7c0 2-1 3-2 4H7c-1-1-2-2-2-4Z"/><path d="M9 15l-1 5h8l-1-5"/><line x1="3" y1="3" x2="21" y2="21"/></svg>' },
+  { cat: 'nutrition', id: 'ayuno', label: 'Ayuno', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>' },
+  { cat: 'nutrition', id: 'agua', label: 'Agua', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7 9 5 13 5 17a7 7 0 0 0 14 0c0-4-2-8-7-15Z"/></svg>' }
 ];
 
 function getLocalDate() {
@@ -215,7 +219,6 @@ async function renderHome() {
   if (!state.user || state.userType !== 'participant') return;
   const p = state.user;
   const wu = getWeightUnit();
-  const hu = getHeightUnit();
   const entries = await getWeightEntries(p.id);
   const currentLbs = entries.length > 0 ? entries[0].weight_lbs : p.starting_weight_lbs;
   const prevLbs = entries.length > 1 ? entries[1].weight_lbs : p.starting_weight_lbs;
@@ -676,7 +679,7 @@ async function openParticipantStats(entry) {
           ? e.activities.split(',').map(id => ACTIVITIES_MAP[id]).filter(Boolean)
           : [];
         const actIcons = acts.length > 0
-          ? acts.slice(0, 3).map(a => a.svg).join('')
+          ? acts.slice(0, 4).map(a => a.svg + `<span style="font-size:0.6rem;vertical-align:middle;margin-left:1px;color:var(--stone-400);">${a.label}</span>`).join(' ')
           : '';
         return `
           <div class="pstats-entry">
@@ -952,14 +955,19 @@ async function renderInfo() {
   const latestWaist = entries.find(e => e.waist_cm)?.waist_cm;
   const waistEl = $('#waist-user-status');
   if (latestWaist) {
+    const hu = getHeightUnit();
+    const isMetric = hu === 'metric';
     const threshold = p.sex === 'male' ? 102 : 88;
+    const displayVal = isMetric ? latestWaist : CALC.cmToInches(latestWaist).toFixed(1);
+    const displayThreshold = isMetric ? threshold : CALC.cmToInches(threshold).toFixed(1);
+    const displayUnit = isMetric ? 'cm' : 'in';
     const atRisk = latestWaist >= threshold;
     waistEl.style.display = '';
     waistEl.style.background = atRisk ? 'rgba(244,63,94,0.08)' : 'rgba(34,197,94,0.08)';
     waistEl.style.borderLeft = `3px solid ${atRisk ? '#f43f5e' : '#22c55e'}`;
     waistEl.textContent = atRisk
-      ? `Tu cintura (${latestWaist} cm) está por encima del umbral de riesgo (${threshold} cm).`
-      : `Tu cintura (${latestWaist} cm) está por debajo del umbral de riesgo (${threshold} cm).`;
+      ? `Tu cintura (${displayVal} ${displayUnit}) está por encima del umbral de riesgo (${displayThreshold} ${displayUnit}).`
+      : `Tu cintura (${displayVal} ${displayUnit}) está por debajo del umbral de riesgo (${displayThreshold} ${displayUnit}).`;
   } else {
     waistEl.style.display = 'none';
   }
@@ -973,6 +981,7 @@ async function renderCheckin() {
   if (!state.user || state.userType !== 'participant') return;
   const p = state.user;
   const wu = getWeightUnit();
+  const hu = getHeightUnit();
   const entries = state.weightHistory.length ? state.weightHistory : await getWeightEntries(p.id);
   state.weightHistory = entries;
 
@@ -1013,8 +1022,16 @@ async function renderCheckin() {
       dot.classList.add('filled');
       dot.textContent = '✓';
       const details = [CALC.formatWeightShort(found.weight_lbs, wu)];
-      if (found.waist_cm) details.push(`cintura ${found.waist_cm}cm`);
+      if (found.waist_cm) {
+        const wv = hu === 'imperial' ? CALC.cmToInches(found.waist_cm).toFixed(1) : found.waist_cm;
+        const wl = hu === 'imperial' ? 'in' : 'cm';
+        details.push(`cintura ${wv}${wl}`);
+      }
       if (found.body_fat_pct) details.push(`grasa ${found.body_fat_pct}%`);
+      if (found.activities) {
+        const acts = found.activities.split(',').map(id => ACTIVITIES.find(a => a.id === id)).filter(Boolean);
+        if (acts.length) details.push(acts.map(a => a.label).join(', '));
+      }
       dot.title = `${dateStr}: ${details.join(' · ')}`;
     } else if (i === 0) {
       dot.classList.add('today');
@@ -1025,8 +1042,11 @@ async function renderCheckin() {
     grid.appendChild(dot);
   }
 
-  // Unit label
+  // Units
+  const isWaistMetric = hu === 'metric';
   $('#checkin-unit-label').textContent = wu;
+  $('#checkin-waist-label').textContent = `Cintura (${isWaistMetric ? 'cm' : 'in'})`;
+  $('#checkin-waist-unit-label').textContent = isWaistMetric ? 'cm' : 'in';
 
   // Activity picker
   renderActivityPicker();
@@ -1035,6 +1055,7 @@ async function renderCheckin() {
   $('#checkin-weight').value = '';
   $('#checkin-weight').placeholder = CALC.formatWeightShort(currentLbs, wu);
   $('#checkin-waist').value = '';
+  $('#checkin-waist').placeholder = isWaistMetric ? 'Opcional' : 'Opcional (in)';
   $('#checkin-bf').value = '';
   $('#checkin-notes').value = '';
   clearActivitySelection();
@@ -1042,7 +1063,9 @@ async function renderCheckin() {
   const todayEntry = entries.find(e => e.date === getLocalDate());
   if (todayEntry) {
     $('#checkin-weight').value = CALC.lbsToInput(todayEntry.weight_lbs, wu);
-    $('#checkin-waist').value = todayEntry.waist_cm || '';
+    $('#checkin-waist').value = isWaistMetric
+      ? (todayEntry.waist_cm || '')
+      : (todayEntry.waist_cm ? CALC.cmToInches(todayEntry.waist_cm).toFixed(1) : '');
     $('#checkin-bf').value = todayEntry.body_fat_pct || '';
     $('#checkin-notes').value = todayEntry.notes || '';
     if (todayEntry.activities) {
@@ -1074,11 +1097,19 @@ async function renderCheckin() {
       else changeHtml = `<span class="we-change" style="color:#a8a29e">0</span>`;
     }
     let extra = '';
-    if (entry.waist_cm) extra += ` · ${entry.waist_cm}cm`;
+    if (entry.waist_cm) {
+      const wv = hu === 'imperial' ? CALC.cmToInches(entry.waist_cm).toFixed(1) : entry.waist_cm;
+      extra += ` · ${wv}${hu === 'imperial' ? 'in' : 'cm'}`;
+    }
     if (entry.body_fat_pct) extra += ` · ${entry.body_fat_pct}%`;
     if (entry.activities) {
       const acts = entry.activities.split(',').map(id => ACTIVITIES.find(a => a.id === id)).filter(Boolean);
-      if (acts.length) extra += ` · ${acts.map(a => a.label).join(', ')}`;
+      if (acts.length) {
+        extra += ` · ${acts.map(a => {
+          const icon = a.svg.replace('viewBox="0 0 24 24"', 'viewBox="0 0 24 24" style="width:12px;height:12px;vertical-align:middle;"');
+          return icon + `<span style="font-size:0.65rem;vertical-align:middle;margin-left:1px;">${a.label}</span>`;
+        }).join(' ')}`;
+      }
     }
     div.innerHTML = `
       <span class="we-date">${CALC.formatDate(entry.date)} <span class="we-time">${CALC.formatDateTime(entry.created_at)}</span></span>
@@ -1116,9 +1147,14 @@ async function openEntryEdit(entryId) {
   const entry = state.weightHistory.find(e => e.id === entryId);
   if (!entry) return;
   const wu = getWeightUnit();
+  const hu = getHeightUnit();
 
   $('#entry-edit-weight').value = wu === 'kg' ? CALC.lbsToKg(entry.weight_lbs) : entry.weight_lbs;
-  $('#entry-edit-waist').value = entry.waist_cm || '';
+  const isWaistMetric = hu === 'metric';
+  $('#entry-edit-waist').value = isWaistMetric
+    ? (entry.waist_cm || '')
+    : (entry.waist_cm ? CALC.cmToInches(entry.waist_cm).toFixed(1) : '');
+  $('#entry-edit-waist-unit').textContent = isWaistMetric ? 'cm' : 'in';
   $('#entry-edit-bf').value = entry.body_fat_pct || '';
   $('#entry-edit-notes').value = entry.notes || '';
   $('#entry-edit-unit-label').textContent = wu;
@@ -1127,7 +1163,20 @@ async function openEntryEdit(entryId) {
   const container = $('#entry-edit-activity-picker');
   container.innerHTML = '';
   const selectedActs = entry.activities ? entry.activities.split(',') : [];
+  let lastCat = '';
   ACTIVITIES.forEach(a => {
+    if (a.cat !== lastCat) {
+      if (lastCat !== '') {
+        const divider = document.createElement('div');
+        divider.className = 'activity-divider';
+        container.appendChild(divider);
+      }
+      const sectionLabel = document.createElement('div');
+      sectionLabel.className = 'activity-section-label';
+      sectionLabel.textContent = a.cat === 'nutrition' ? 'Alimentación' : 'Ejercicio';
+      container.appendChild(sectionLabel);
+      lastCat = a.cat;
+    }
     const wrapper = document.createElement('div');
     wrapper.className = 'activity-item';
     const btn = document.createElement('button');
@@ -1176,11 +1225,20 @@ function initEntryEditModal() {
     btn.disabled = true; btn.textContent = 'Guardando...';
 
     const wu = getWeightUnit();
+    const hu = getHeightUnit();
     const raw = parseFloat($('#entry-edit-weight').value);
     if (!raw || raw <= 0) { showToast('Ingresa un peso válido', 'error'); btn.disabled = false; btn.textContent = 'Guardar cambios'; return; }
+    if (wu === 'kg' && (raw < 10 || raw > 400)) { showToast(`¿${raw} kg? Ese peso no parece real`, 'error'); btn.disabled = false; btn.textContent = 'Guardar cambios'; return; }
+    if (wu === 'lbs' && (raw < 22 || raw > 880)) { showToast(`¿${raw} lbs? Ese peso no parece real`, 'error'); btn.disabled = false; btn.textContent = 'Guardar cambios'; return; }
     const weightLbs = wu === 'kg' ? CALC.kgToLbs(raw) : raw;
-    const waistCm = parseFloat($('#entry-edit-waist').value) || null;
+    const waistRaw = parseFloat($('#entry-edit-waist').value);
+    let waistCm = null;
+    if (waistRaw > 0) {
+      if (waistRaw < 10) { showToast('La cintura debe ser mayor a 10', 'error'); btn.disabled = false; btn.textContent = 'Guardar cambios'; return; }
+      waistCm = hu === 'imperial' ? CALC.inchesToCm(waistRaw) : waistRaw;
+    }
     const bodyFatPct = parseFloat($('#entry-edit-bf').value) || null;
+    if (bodyFatPct !== null && (bodyFatPct < 1 || bodyFatPct > 80)) { showToast('% grasa corporal inválido (1-80)', 'error'); btn.disabled = false; btn.textContent = 'Guardar cambios'; return; }
     const notes = $('#entry-edit-notes').value || null;
     const acts = $$('#entry-edit-activity-picker .activity-btn.active').map(b => b.dataset.id);
     const activities = acts.length > 0 ? acts.join(',') : null;
@@ -1203,7 +1261,20 @@ function initEntryEditModal() {
 function renderActivityPicker() {
   const container = $('#activity-picker');
   container.innerHTML = '';
+  let lastCat = '';
   ACTIVITIES.forEach(a => {
+    if (a.cat !== lastCat) {
+      if (lastCat !== '') {
+        const divider = document.createElement('div');
+        divider.className = 'activity-divider';
+        container.appendChild(divider);
+      }
+      const sectionLabel = document.createElement('div');
+      sectionLabel.className = 'activity-section-label';
+      sectionLabel.textContent = a.cat === 'nutrition' ? 'Alimentación' : 'Ejercicio';
+      container.appendChild(sectionLabel);
+      lastCat = a.cat;
+    }
     const wrapper = document.createElement('div');
     wrapper.className = 'activity-item';
     const btn = document.createElement('button');
@@ -1237,13 +1308,23 @@ async function handleCheckIn(e) {
   if (!state.user || state.userType !== 'participant') return;
   const raw = parseFloat($('#checkin-weight').value);
   const wu = getWeightUnit();
-  const weightLbs = wu === 'kg' ? CALC.kgToLbs(raw) : raw;
+  const hu = getHeightUnit();
   if (!raw || raw <= 0) { showToast('Ingresa un peso válido', 'error'); return; }
+  if (wu === 'kg' && (raw < 10 || raw > 400)) { showToast(`¿${raw} kg? Ese peso no parece real (10-400 kg)`, 'error'); return; }
+  if (wu === 'lbs' && (raw < 22 || raw > 880)) { showToast(`¿${raw} lbs? Ese peso no parece real (22-880 lbs)`, 'error'); return; }
+  const weightLbs = wu === 'kg' ? CALC.kgToLbs(raw) : raw;
 
   const waistRaw = parseFloat($('#checkin-waist').value);
-  const waistCm = waistRaw > 0 ? waistRaw : null;
+  let waistCm = null;
+  if (waistRaw > 0) {
+    const wl = hu === 'imperial' ? 'in' : 'cm';
+    if (waistRaw < 10) { showToast(`La cintura debe ser mayor a 10 ${wl}`, 'error'); return; }
+    if (waistRaw > (hu === 'imperial' ? 100 : 250)) { showToast(`Cintura demasiado alta (>${hu === 'imperial' ? 100 : 250} ${wl})`, 'error'); return; }
+    waistCm = hu === 'imperial' ? CALC.inchesToCm(waistRaw) : waistRaw;
+  }
   const bfRaw = parseFloat($('#checkin-bf').value);
   const bodyFatPct = bfRaw > 0 ? bfRaw : null;
+  if (bodyFatPct !== null && (bodyFatPct < 1 || bodyFatPct > 80)) { showToast('% grasa corporal inválido (1-80)', 'error'); return; }
   const notes = $('#checkin-notes').value.trim();
   const activities = Array.from($$('.activity-btn.active')).map(b => b.dataset.id).join(',') || null;
 
