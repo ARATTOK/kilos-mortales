@@ -22,7 +22,10 @@
       </div>
       <div class="nav-right">
         <span class="nav-user" id="nav-username"></span>
-        <button class="unit-toggle" id="unit-toggle" title="Cambiar unidades">kg</button>
+        <div class="unit-toggles">
+          <button class="unit-toggle" id="wt-toggle">kg</button>
+          <button class="unit-toggle" id="ht-toggle">cm</button>
+        </div>
         <button class="btn btn-ghost btn-sm" id="btn-logout">Salir</button>
       </div>
     </div>
@@ -489,6 +492,17 @@
       </div>
     </section>
 
+    <!-- ─── PARTICIPANT STATS MODAL ─── -->
+    <div id="participant-modal" class="modal-overlay hidden">
+      <div class="modal modal-participant">
+        <div class="modal-header">
+          <span class="card-title">Estadísticas</span>
+          <button class="btn btn-sm btn-ghost" id="participant-modal-close">✕</button>
+        </div>
+        <div id="participant-modal-body"></div>
+      </div>
+    </div>
+
     <!-- ─── ADMIN ─── -->
     <section id="view-admin" class="view admin-page hidden no-bottom-nav">
       <div class="container">
@@ -552,10 +566,17 @@
               </div>
               <div class="form-group"><label>Actividad</label><select class="form-select" id="admin-activity"><option value="">...</option><option value="sedentary">Sedentario</option><option value="light">Ligero</option><option value="moderate">Moderado</option><option value="heavy">Intenso</option><option value="very_heavy">Muy intenso</option></select></div>
               <div class="form-group">
-                <label>Unidad</label>
+                <label>Unidad de peso</label>
                 <div class="form-toggle">
-                  <label><input type="radio" name="admin-unit-pref" value="metric" checked> Métrico</label>
-                  <label><input type="radio" name="admin-unit-pref" value="imperial"> Imperial</label>
+                  <label><input type="radio" name="admin-wt-unit" value="kg" checked> kg</label>
+                  <label><input type="radio" name="admin-wt-unit" value="lbs"> lbs</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Unidad de altura</label>
+                <div class="form-toggle">
+                  <label><input type="radio" name="admin-ht-unit" value="metric" checked> cm</label>
+                  <label><input type="radio" name="admin-ht-unit" value="imperial"> ft/in</label>
                 </div>
               </div>
               <button class="btn btn-primary btn-block" id="admin-create-btn" type="submit">Crear</button>
@@ -593,10 +614,17 @@
             </div>
             <div class="form-group"><label>Actividad</label><select class="form-select" id="edit-activity"><option value="">...</option><option value="sedentary">Sedentario</option><option value="light">Ligero</option><option value="moderate">Moderado</option><option value="heavy">Intenso</option><option value="very_heavy">Muy intenso</option></select></div>
             <div class="form-group">
-              <label>Unidad</label>
+              <label>Unidad de peso</label>
               <div class="form-toggle">
-                <label><input type="radio" name="edit-unit-pref" value="metric" checked> Métrico</label>
-                <label><input type="radio" name="edit-unit-pref" value="imperial"> Imperial</label>
+                <label><input type="radio" name="edit-wt-unit" value="kg" checked> kg</label>
+                <label><input type="radio" name="edit-wt-unit" value="lbs"> lbs</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Unidad de altura</label>
+              <div class="form-toggle">
+                <label><input type="radio" name="edit-ht-unit" value="metric" checked> cm</label>
+                <label><input type="radio" name="edit-ht-unit" value="imperial"> ft/in</label>
               </div>
             </div>
             <button class="btn btn-primary btn-block" id="admin-edit-save" type="submit">Guardar</button>

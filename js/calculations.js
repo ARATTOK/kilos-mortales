@@ -103,39 +103,39 @@ const CALC = {
   },
 
   // ─── Formateo según preferencia ───
-  formatWeight(lbs, unitPref = 'imperial') {
-    if (unitPref === 'metric') {
+  formatWeight(lbs, weightUnit = 'lbs') {
+    if (weightUnit === 'kg') {
       return CALC.lbsToKg(lbs).toFixed(1) + ' kg';
     }
     return lbs.toFixed(1) + ' lbs';
   },
 
-  formatHeight(cm, unitPref = 'imperial') {
-    if (unitPref === 'imperial') {
+  formatHeight(cm, heightUnit = 'imperial') {
+    if (heightUnit === 'imperial') {
       const totalIn = Math.round(CALC.cmToInches(cm));
       const ft = Math.floor(totalIn / 12);
       const inches = totalIn % 12;
       return `${ft}′${inches}″`;
     }
-    return (cm / 100).toFixed(2) + ' m';
+    return cm.toFixed(0) + ' cm';
   },
 
-  formatWeightInput(lbs, unitPref = 'imperial') {
-    if (unitPref === 'metric') return CALC.lbsToKg(lbs);
+  formatWeightInput(lbs, weightUnit = 'lbs') {
+    if (weightUnit === 'kg') return CALC.lbsToKg(lbs);
     return lbs;
   },
 
-  lbsToInput(lbs, unitPref) {
-    return CALC.formatWeightInput(lbs, unitPref);
+  lbsToInput(lbs, weightUnit) {
+    return CALC.formatWeightInput(lbs, weightUnit);
   },
 
-  inputToLbs(value, unitPref) {
-    if (unitPref === 'metric') return CALC.kgToLbs(value);
+  inputToLbs(value, weightUnit) {
+    if (weightUnit === 'kg') return CALC.kgToLbs(value);
     return value;
   },
 
   formatPercent(value) {
-    return (value >= 0 ? '-' : '+') + Math.abs(value).toFixed(1) + '%';
+    return Math.abs(value).toFixed(1) + '%';
   },
 
   formatDate(dateStr) {
@@ -155,8 +155,8 @@ const CALC = {
   },
 
   // ─── Peso en kg para inputs en metric ───
-  formatWeightShort(lbs, unitPref) {
-    if (unitPref === 'metric') return CALC.lbsToKg(lbs).toFixed(1);
+  formatWeightShort(lbs, weightUnit) {
+    if (weightUnit === 'kg') return CALC.lbsToKg(lbs).toFixed(1);
     return lbs.toFixed(1);
   }
 

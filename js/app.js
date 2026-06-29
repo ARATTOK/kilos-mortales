@@ -2,7 +2,8 @@ const state = {
   currentView: null,
   user: null,
   userType: null,
-  activeUnitPref: 'metric',
+  weightUnit: 'kg',
+  heightUnit: 'metric',
   leaderboard: [],
   participantData: null,
   weightHistory: [],
@@ -33,7 +34,8 @@ function saveSession() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({
     user: state.user,
     userType: state.userType,
-    activeUnitPref: state.activeUnitPref
+    weightUnit: state.weightUnit,
+    heightUnit: state.heightUnit
   }));
 }
 
@@ -43,7 +45,8 @@ function loadSession() {
     if (data && data.user && data.userType) {
       state.user = data.user;
       state.userType = data.userType;
-      state.activeUnitPref = data.activeUnitPref || 'metric';
+      state.weightUnit = data.weightUnit || 'kg';
+      state.heightUnit = data.heightUnit || 'metric';
       return true;
     }
   } catch(_) {}
@@ -89,14 +92,14 @@ function showView(viewId) {
     footer.classList.add('hidden');
     document.body.classList.add('no-bottom-nav');
     $('#nav-username').textContent = 'Admin';
-    updateUnitToggle();
+    updateToggles();
   } else if (isLoggedIn) {
     navbar.classList.remove('hidden');
     bottomNav.classList.remove('hidden');
     footer.classList.remove('hidden');
     document.body.classList.remove('no-bottom-nav');
     $('#nav-username').textContent = state.user?.nickname || '';
-    updateUnitToggle();
+    updateToggles();
   } else {
     navbar.classList.add('hidden');
     bottomNav.classList.add('hidden');
@@ -112,8 +115,12 @@ function showView(viewId) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function getUnitPref() {
-  return state.activeUnitPref;
+function getWeightUnit() {
+  return state.weightUnit;
+}
+
+function getHeightUnit() {
+  return state.heightUnit;
 }
 
 // ════════════════════════════════════════════
@@ -171,9 +178,10 @@ async function handleLogin(e) {
     } else {
       const user = await participantLogin(username, password);
       state.user = user; state.userType = 'participant';
-      state.activeUnitPref = user.unit_preference;
+      state.weightUnit = user.weight_unit || 'kg';
+      state.heightUnit = user.height_unit || 'metric';
       saveSession();
-      updateUnitToggle();
+      updateToggles();
       showView('home');
       await renderHome();
       showToast(`Bienvenido ${user.nickname}!`, 'success');
@@ -206,7 +214,8 @@ function handleLogout() {
 async function renderHome() {
   if (!state.user || state.userType !== 'participant') return;
   const p = state.user;
-  const up = getUnitPref();
+  const wu = getWeightUnit();
+  const hu = getHeightUnit();
   const entries = await getWeightEntries(p.id);
   const currentLbs = entries.length > 0 ? entries[0].weight_lbs : p.starting_weight_lbs;
   const prevLbs = entries.length > 1 ? entries[1].weight_lbs : p.starting_weight_lbs;
@@ -223,13 +232,13 @@ async function renderHome() {
 
   $('#home-welcome').textContent = `Hola ${p.nickname}!`;
   $('#home-subtitle').textContent = entries.length > 0
-    ? `${entries.length} reportes · ${CALC.formatWeight(currentLbs, up)} actual`
+    ? `${entries.length} reportes · ${CALC.formatWeight(currentLbs, wu)} actual`
     : '¡Registra tu primer reporte!';
 
   const changeEl = $('#home-change');
   if (entries.length > 1) {
     const absC = Math.abs(change);
-    const cLabel = CALC.formatWeight(absC, up);
+    const cLabel = CALC.formatWeight(absC, wu);
     if (change < 0) { changeEl.className = 'change-banner down'; changeEl.textContent = `${cLabel} menos desde el último reporte`; }
     else if (change > 0) { changeEl.className = 'change-banner up'; changeEl.textContent = `${cLabel} más desde el último reporte`; }
     else { changeEl.className = 'change-banner flat'; changeEl.textContent = 'Sin cambios'; }
@@ -239,16 +248,16 @@ async function renderHome() {
   }
 
   // Stats
-  $('#hstat-weight').textContent = CALC.formatWeightShort(currentLbs, up);
-  $('#hstat-weight').closest('.stat-pill').querySelector('.lbl').textContent = up === 'metric' ? 'Peso (kg)' : 'Peso (lbs)';
+  $('#hstat-weight').textContent = CALC.formatWeightShort(currentLbs, wu);
+  $('#hstat-weight').closest('.stat-pill').querySelector('.lbl').textContent = wu === 'kg' ? 'Peso (kg)' : 'Peso (lbs)';
   $('#hstat-lost').textContent = CALC.formatPercent(pctLost);
   $('#hstat-bmi').textContent = bmi.toFixed(1);
   $('#hstat-tdee').textContent = tdee.toLocaleString();
 
   // Progress
   const pctColor = progress < 0 ? '#ef4444' : progress < 25 ? '#f97316' : progress < 50 ? '#eab308' : progress < 75 ? '#22c55e' : '#16a34a';
-  $('#home-current-weight').textContent = CALC.formatWeight(currentLbs, up);
-  $('#home-ideal-weight').textContent = CALC.formatWeight(idealLbs, up);
+  $('#home-current-weight').textContent = CALC.formatWeight(currentLbs, wu);
+  $('#home-ideal-weight').textContent = CALC.formatWeight(idealLbs, wu);
   $('#home-progress-label').textContent = `${progress.toFixed(0)}%`;
   $('#home-progress-label').style.color = pctColor;
   const fill = $('#home-progress-fill');
@@ -257,7 +266,7 @@ async function renderHome() {
   if (entries.length > 0) {
     const diffToIdeal = Math.abs(currentLbs - idealLbs);
     const dir = currentLbs > idealLbs ? 'perder' : 'ganar';
-    const remain = CALC.formatWeight(diffToIdeal, up) + ' ' + (up === 'metric' ? 'kg' : 'lbs');
+    const remain = CALC.formatWeight(diffToIdeal, wu) + ' ' + wu;
     if (diffToIdeal < 1) $('#home-progress-sub').textContent = '¡Peso ideal alcanzado!';
     else $('#home-progress-sub').textContent = `Te faltan ${remain} por ${dir}`;
   } else {
@@ -473,18 +482,17 @@ async function renderLeaderboard() {
     const data = state.leaderboard.length ? state.leaderboard : await getLeaderboardData();
     state.leaderboard = data;
     const currentId = state.user?.id;
-    const up = getUnitPref();
+    const wu = getWeightUnit();
 
     // Hero
     const hero = $('#ranking-hero');
     if (data.length > 0) {
       const top = data[0];
-      const bmi = CALC.bmi(top.currentWeightLbs, top.heightCm);
       hero.querySelector('.hero-rank').textContent = '1';
       hero.querySelector('.hero-name').textContent = top.nickname;
       hero.querySelector('.hero-pct').textContent = CALC.formatPercent(top.percentLost);
       hero.querySelector('.hero-detail').textContent =
-        `${CALC.formatWeight(top.startingWeightLbs, up)} → ${CALC.formatWeight(top.currentWeightLbs, up)} · ${top.entriesCount} reportes`;
+        `${CALC.formatWeight(top.startingWeightLbs, wu)} → ${CALC.formatWeight(top.currentWeightLbs, wu)} · ${top.entriesCount} reportes`;
     } else {
       hero.querySelector('.hero-rank').textContent = '—';
       hero.querySelector('.hero-name').textContent = 'Esperando participantes...';
@@ -502,57 +510,191 @@ async function renderLeaderboard() {
 
     let rank = 0;
     let prevPct = Infinity;
-    const rankClasses = ['gold', 'silver', 'bronze'];
+    const distinctPcts = [...new Set(data.map(e => e.percentLost))].length;
+
+    function rankColor(r, total) {
+      const t = total <= 1 ? 0 : (r - 1) / (total - 1);
+      const R = Math.round(249 + (225 - 249) * t);
+      const G = Math.round(115 + (29 - 115) * t);
+      const B = Math.round(22 + (72 - 22) * t);
+      return `rgb(${R},${G},${B})`;
+    }
 
     data.forEach((entry) => {
       if (entry.percentLost < prevPct) rank++;
       prevPct = entry.percentLost;
       const isYou = entry.id === currentId;
       const lbsLost = entry.startingWeightLbs - entry.currentWeightLbs;
-      const rankDisplay = rank <= 3
-        ? `<span class="rank-badge ${rankClasses[rank - 1]}">#${rank}</span>`
-        : `<span class="rank-badge">#${rank}</span>`;
+      const c = rankColor(rank, distinctPcts);
+      const rankDisplay = `<span class="rank-badge" style="background:${c};color:#fff;">#${rank}</span>`;
+
+      // Progress toward ideal weight
+      const prog = entry.progressToIdeal;
+      const progColor = prog >= 100 ? '#16a34a' : (prog >= 50 ? '#22c55e' : (prog > 0 ? '#f97316' : '#e11d48'));
 
       // Percent intensity
       const pct = entry.percentLost;
       const pctClass = pct > 0 ? (pct >= 10 ? 'great' : 'good') : 'bad';
-      const pctSign = pct > 0 ? '+' : '';
-      const barColor = pct > 0
-        ? (pct >= 10 ? '#16a34a' : '#22c55e')
-        : '#e11d48';
-      // Cap bar at 30% for visual scale
-      const barPct = Math.min(Math.max(pct, 0), 30) / 30 * 100;
-      const rankClass = rank <= 3 ? ` rank-${rank}` : '';
+      const alpha = isYou ? 0.12 : 0.06;
+      const rowBg = c.replace('rgb', 'rgba').replace(')', `,${alpha})`);
 
       const div = document.createElement('div');
-      div.className = `ranking-item${isYou ? ' is-you' : ''}${rankClass}`;
+      div.className = `ranking-item${isYou ? ' is-you' : ''}`;
+      div.style.background = rowBg;
+      div.style.borderColor = c.replace('rgb', 'rgba').replace(')', ',0.15)');
       div.innerHTML = `
         <div class="r-rank">${rankDisplay}</div>
         <div class="r-avatar">${getAvatar(entry.nickname)}</div>
         <div class="r-info">
-          <div class="r-name">${entry.nickname}${isYou ? ' <span class="tag">TÚ</span>' : ''}</div>
+          <div class="r-name">
+            <button class="r-name-btn" data-participant-id="${entry.id}">${entry.nickname}</button>
+            ${isYou ? ' <span class="tag">TÚ</span>' : ''}
+          </div>
           <div class="r-detail">
-            ${CALC.formatWeight(entry.startingWeightLbs, up)} →
-            ${CALC.formatWeight(entry.currentWeightLbs, up)}
-            ${lbsLost > 0 ? ` · ${CALC.formatWeight(lbsLost, up)} perdidos` : ''}
+            ${CALC.formatWeight(entry.startingWeightLbs, wu)} → ${CALC.formatWeight(entry.currentWeightLbs, wu)}
+            ${lbsLost > 0 ? ` <span class="r-lost">${CALC.formatWeightShort(lbsLost, wu)} perdidos</span>` : ''}
           </div>
         </div>
+        <div class="r-ideal">
+          <div class="r-ideal-val" style="color:${prog >= 100 ? '#16a34a' : 'var(--orange-500)'}">${CALC.formatWeight(entry.idealWeightLbs, wu)}</div>
+          <div class="r-ideal-lbl">ideal</div>
+        </div>
         <div class="r-side">
-          <div class="r-pct ${pctClass}">${pctSign}${CALC.formatPercent(pct)}</div>
-          <div class="r-sub">${entry.entriesCount} reportes</div>
+          <div class="r-pct ${pctClass}">${CALC.formatPercent(pct)}</div>
+          <div class="r-sub">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px;vertical-align:middle;margin-right:2px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            ${entry.entriesCount}
+          </div>
         </div>
         <div class="r-bar-wrap">
+          <div class="r-bar-label">${prog.toFixed(0)}% del ideal</div>
           <div class="r-bar-track">
-            <div class="r-bar-fill" style="width:${barPct}%;background:${barColor};"></div>
+            <div class="r-bar-fill" style="width:${prog}%;background:${progColor};"></div>
           </div>
         </div>
       `;
       list.appendChild(div);
     });
+
+    // Click on participant name → open stats modal
+    list.querySelectorAll('.r-name-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = parseInt(btn.dataset.participantId);
+        const entry = data.find(d => d.id === id);
+        if (entry) openParticipantStats(entry);
+      });
+    });
   } catch (e) {
     console.error('Ranking error:', e);
     $('#ranking-list').innerHTML = '<div class="empty-state"><p>Error al cargar</p></div>';
   }
+}
+
+async function openParticipantStats(entry) {
+  const modal = $('#participant-modal');
+  const body = $('#participant-modal-body');
+  if (!modal || !body) return;
+  const wu = getWeightUnit();
+  const hu = getHeightUnit();
+
+  // Fetch entries for this participant
+  let entries = [];
+  try { entries = await getWeightEntries(entry.id); } catch (_) {}
+
+  const lbsLost = entry.startingWeightLbs - entry.currentWeightLbs;
+  const bmiCat = CALC.bmiCategory(entry.bmi);
+  const prog = entry.progressToIdeal;
+
+  // Last 5 entries for mini history
+  const recent = entries.slice(0, 5);
+
+  const ACTIVITIES_MAP = {};
+  (ACTIVITIES || []).forEach(a => { ACTIVITIES_MAP[a.id] = a; });
+
+  body.innerHTML = `
+    <div class="pstats-header">
+      <span class="avatar-init avatar-init-lg" style="width:3rem;height:3rem;font-size:1.2rem;">${entry.nickname.charAt(0).toUpperCase()}</span>
+      <div>
+        <div class="pstats-name">${entry.nickname}</div>
+        <div class="pstats-sub">${entry.age} años · ${CALC.formatHeight(entry.heightCm, hu)}</div>
+      </div>
+    </div>
+
+    <div class="pstats-grid">
+      <div class="pstats-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><circle cx="12" cy="12" r="3"/><path d="M12 1v8"/><path d="M12 15v8"/><path d="M4 12H1"/><path d="M23 12h-3"/></svg>
+        <div class="pstats-card-val">${CALC.formatWeight(entry.startingWeightLbs, wu)}</div>
+        <div class="pstats-card-lbl">Inicial</div>
+      </div>
+      <div class="pstats-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <div class="pstats-card-val">${CALC.formatWeight(entry.currentWeightLbs, wu)}</div>
+        <div class="pstats-card-lbl">Actual</div>
+      </div>
+      <div class="pstats-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+        <div class="pstats-card-val" style="color:${prog >= 100 ? '#16a34a' : 'var(--orange-500)'}">${CALC.formatWeight(entry.idealWeightLbs, wu)}</div>
+        <div class="pstats-card-lbl">Ideal</div>
+      </div>
+      <div class="pstats-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <div class="pstats-card-val ${lbsLost > 0 ? 'down' : ''}">${lbsLost > 0 ? '-' : ''}${CALC.formatWeightShort(Math.abs(lbsLost), wu)}</div>
+        <div class="pstats-card-lbl">Perdido</div>
+      </div>
+    </div>
+
+    <div class="pstats-progress">
+      <div class="pstats-progress-label">
+        <span>Progreso hacia tu peso ideal</span>
+        <span class="pstats-progress-pct">${prog.toFixed(0)}%</span>
+      </div>
+      <div class="r-bar-track">
+        <div class="r-bar-fill" style="width:${prog}%;background:${prog >= 100 ? '#16a34a' : (prog >= 50 ? '#22c55e' : '#f97316')};"></div>
+      </div>
+    </div>
+
+    <div class="pstats-row">
+      <div class="pstats-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span>BMI <strong>${entry.bmi.toFixed(1)}</strong> <span class="pstats-bmi-cat">${bmiCat}</span></span>
+      </div>
+      <div class="pstats-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>${entry.entriesCount} reportes</span>
+      </div>
+    </div>
+
+    ${recent.length > 0 ? `
+    <div class="pstats-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Últimos reportes
+    </div>
+    <div class="pstats-history">
+      ${recent.map(e => {
+        const acts = e.activities
+          ? e.activities.split(',').map(id => ACTIVITIES_MAP[id]).filter(Boolean)
+          : [];
+        const actIcons = acts.length > 0
+          ? acts.slice(0, 3).map(a => a.svg).join('')
+          : '';
+        return `
+          <div class="pstats-entry">
+            <span class="pstats-entry-date">${CALC.formatDate(e.date)} ${e.created_at ? `<span class="pstats-entry-time">${CALC.formatDateTime(e.created_at)}</span>` : ''}</span>
+            <span class="pstats-entry-weight">${CALC.formatWeight(e.weight_lbs, wu)}</span>
+            ${actIcons ? `<span class="pstats-entry-acts">${actIcons}</span>` : ''}
+          </div>
+        `;
+      }).join('')}
+    </div>` : ''}
+  `;
+
+  modal.classList.remove('hidden');
+}
+
+function closeParticipantStats() {
+  const modal = $('#participant-modal');
+  if (modal) modal.classList.add('hidden');
 }
 
 // ════════════════════════════════════════════
@@ -566,15 +708,15 @@ function safeDestroy(id) {
 function renderStats() {
   if (!state.user || state.userType !== 'participant') return;
   const p = state.user;
-  const up = getUnitPref();
+  const wu = getWeightUnit();
   const pd = state.participantData;
   const entries = state.weightHistory;
 
   // ─── Chart: Personal weight ───
   safeDestroy('chart-weight');
   const dates = entries.map(e => CALC.formatDate(e.date)).reverse();
-  const weights = entries.map(e => up === 'metric' ? CALC.lbsToKg(e.weight_lbs) : e.weight_lbs).reverse();
-  const unitLbl = up === 'metric' ? 'kg' : 'lbs';
+  const weights = entries.map(e => wu === 'kg' ? CALC.lbsToKg(e.weight_lbs) : e.weight_lbs).reverse();
+  const unitLbl = wu === 'kg' ? 'kg' : 'lbs';
   if (entries.length >= 2) {
     state.chartInstances['chart-weight'] = new Chart($('#chart-weight'), {
       type: 'line',
@@ -632,7 +774,7 @@ function renderStats() {
             callbacks: {
               label: (ctx) => {
                 const entry = sorted[ctx.dataIndex];
-                return `${CALC.formatWeight(entry.startingWeightLbs, up)} → ${CALC.formatWeight(entry.currentWeightLbs, up)}`;
+                return `${CALC.formatWeight(entry.startingWeightLbs, wu)} → ${CALC.formatWeight(entry.currentWeightLbs, wu)}`;
               }
             }
           }
@@ -687,7 +829,7 @@ function renderStats() {
     const weeklyLabels = [];
     for (let i = entries.length - 1; i > 0; i--) {
       const diff = entries[i - 1].weight_lbs - entries[i].weight_lbs;
-      weeklyChanges.push(up === 'metric' ? CALC.lbsToKg(diff) : diff);
+      weeklyChanges.push(wu === 'kg' ? CALC.lbsToKg(diff) : diff);
       weeklyLabels.push(CALC.formatDate(entries[i].date));
     }
     state.chartInstances['chart-weekly'] = new Chart($('#chart-weekly'), {
@@ -830,7 +972,7 @@ async function renderInfo() {
 async function renderCheckin() {
   if (!state.user || state.userType !== 'participant') return;
   const p = state.user;
-  const up = getUnitPref();
+  const wu = getWeightUnit();
   const entries = state.weightHistory.length ? state.weightHistory : await getWeightEntries(p.id);
   state.weightHistory = entries;
 
@@ -839,9 +981,9 @@ async function renderCheckin() {
   const change = CALC.weightChange(prevLbs, currentLbs);
 
   // Last weight display
-  $('#checkin-last-weight').textContent = CALC.formatWeightShort(currentLbs, up);
+  $('#checkin-last-weight').textContent = CALC.formatWeightShort(currentLbs, wu);
   $('#checkin-last-label').textContent = entries.length > 0
-    ? `${CALC.formatDate(entries[0].date)} · ${CALC.formatWeight(currentLbs, up)}`
+    ? `${CALC.formatDate(entries[0].date)} · ${CALC.formatWeight(currentLbs, wu)}`
     : 'Sin reportes aún';
 
   // Streak (semanal)
@@ -870,7 +1012,7 @@ async function renderCheckin() {
     if (found) {
       dot.classList.add('filled');
       dot.textContent = '✓';
-      const details = [CALC.formatWeightShort(found.weight_lbs, up)];
+      const details = [CALC.formatWeightShort(found.weight_lbs, wu)];
       if (found.waist_cm) details.push(`cintura ${found.waist_cm}cm`);
       if (found.body_fat_pct) details.push(`grasa ${found.body_fat_pct}%`);
       dot.title = `${dateStr}: ${details.join(' · ')}`;
@@ -884,14 +1026,14 @@ async function renderCheckin() {
   }
 
   // Unit label
-  $('#checkin-unit-label').textContent = up === 'metric' ? 'kg' : 'lbs';
+  $('#checkin-unit-label').textContent = wu;
 
   // Activity picker
   renderActivityPicker();
 
   // Form
   $('#checkin-weight').value = '';
-  $('#checkin-weight').placeholder = CALC.formatWeightShort(currentLbs, up);
+  $('#checkin-weight').placeholder = CALC.formatWeightShort(currentLbs, wu);
   $('#checkin-waist').value = '';
   $('#checkin-bf').value = '';
   $('#checkin-notes').value = '';
@@ -899,7 +1041,7 @@ async function renderCheckin() {
 
   const todayEntry = entries.find(e => e.date === getLocalDate());
   if (todayEntry) {
-    $('#checkin-weight').value = CALC.lbsToInput(todayEntry.weight_lbs, up);
+    $('#checkin-weight').value = CALC.lbsToInput(todayEntry.weight_lbs, wu);
     $('#checkin-waist').value = todayEntry.waist_cm || '';
     $('#checkin-bf').value = todayEntry.body_fat_pct || '';
     $('#checkin-notes').value = todayEntry.notes || '';
@@ -927,8 +1069,8 @@ async function renderCheckin() {
     let changeHtml = '';
     if (idx < entries.length - 1) {
       const diff = entries[idx + 1].weight_lbs - entry.weight_lbs;
-      if (diff < 0) changeHtml = `<span class="we-change down">-${CALC.formatWeightShort(Math.abs(diff), up)} ${up === 'metric' ? 'kg' : 'lbs'}</span>`;
-      else if (diff > 0) changeHtml = `<span class="we-change up">+${CALC.formatWeightShort(diff, up)} ${up === 'metric' ? 'kg' : 'lbs'}</span>`;
+      if (diff < 0) changeHtml = `<span class="we-change down">-${CALC.formatWeightShort(Math.abs(diff), wu)} ${wu}</span>`;
+      else if (diff > 0) changeHtml = `<span class="we-change up">+${CALC.formatWeightShort(diff, wu)} ${wu}</span>`;
       else changeHtml = `<span class="we-change" style="color:#a8a29e">0</span>`;
     }
     let extra = '';
@@ -940,7 +1082,7 @@ async function renderCheckin() {
     }
     div.innerHTML = `
       <span class="we-date">${CALC.formatDate(entry.date)} <span class="we-time">${CALC.formatDateTime(entry.created_at)}</span></span>
-      <span class="we-weight">${CALC.formatWeight(entry.weight_lbs, up)}</span>
+      <span class="we-weight">${CALC.formatWeight(entry.weight_lbs, wu)}</span>
       <span>${changeHtml}</span>
       ${extra ? `<span class="we-extra">${extra}</span>` : ''}
       ${idx === 0 ? `
@@ -973,13 +1115,13 @@ async function renderCheckin() {
 async function openEntryEdit(entryId) {
   const entry = state.weightHistory.find(e => e.id === entryId);
   if (!entry) return;
-  const up = getUnitPref();
+  const wu = getWeightUnit();
 
-  $('#entry-edit-weight').value = up === 'metric' ? CALC.lbsToKg(entry.weight_lbs) : entry.weight_lbs;
+  $('#entry-edit-weight').value = wu === 'kg' ? CALC.lbsToKg(entry.weight_lbs) : entry.weight_lbs;
   $('#entry-edit-waist').value = entry.waist_cm || '';
   $('#entry-edit-bf').value = entry.body_fat_pct || '';
   $('#entry-edit-notes').value = entry.notes || '';
-  $('#entry-edit-unit-label').textContent = up === 'metric' ? 'kg' : 'lbs';
+  $('#entry-edit-unit-label').textContent = wu;
 
   // Activity picker inside modal
   const container = $('#entry-edit-activity-picker');
@@ -1033,10 +1175,10 @@ function initEntryEditModal() {
     const btn = $('#entry-edit-save');
     btn.disabled = true; btn.textContent = 'Guardando...';
 
-    const up = getUnitPref();
+    const wu = getWeightUnit();
     const raw = parseFloat($('#entry-edit-weight').value);
     if (!raw || raw <= 0) { showToast('Ingresa un peso válido', 'error'); btn.disabled = false; btn.textContent = 'Guardar cambios'; return; }
-    const weightLbs = up === 'metric' ? CALC.kgToLbs(raw) : raw;
+    const weightLbs = wu === 'kg' ? CALC.kgToLbs(raw) : raw;
     const waistCm = parseFloat($('#entry-edit-waist').value) || null;
     const bodyFatPct = parseFloat($('#entry-edit-bf').value) || null;
     const notes = $('#entry-edit-notes').value || null;
@@ -1094,8 +1236,8 @@ async function handleCheckIn(e) {
   e.preventDefault();
   if (!state.user || state.userType !== 'participant') return;
   const raw = parseFloat($('#checkin-weight').value);
-  const up = getUnitPref();
-  const weightLbs = up === 'metric' ? CALC.kgToLbs(raw) : raw;
+  const wu = getWeightUnit();
+  const weightLbs = wu === 'kg' ? CALC.kgToLbs(raw) : raw;
   if (!raw || raw <= 0) { showToast('Ingresa un peso válido', 'error'); return; }
 
   const waistRaw = parseFloat($('#checkin-waist').value);
@@ -1112,8 +1254,8 @@ async function handleCheckIn(e) {
   try {
     const result = await addWeightEntry(state.user.id, weightLbs, waistCm, bodyFatPct, activities, notes);
     showToast(result.updated
-      ? `Actualizado a ${CALC.formatWeight(weightLbs, up)}`
-      : `${CALC.formatWeight(weightLbs, up)} registrado. Semana #${state.weightHistory.length + 1}!`, 'success');
+      ? `Actualizado a ${CALC.formatWeight(weightLbs, wu)}`
+      : `${CALC.formatWeight(weightLbs, wu)} registrado. Semana #${state.weightHistory.length + 1}!`, 'success');
     await renderHome();
     await renderCheckin();
     updateReportBanner(state.weightHistory);
@@ -1130,7 +1272,8 @@ async function handleCheckIn(e) {
 
 async function renderAdminPanel() {
   if (!state.user || state.userType !== 'admin') return;
-  const up = getUnitPref();
+  const wu = getWeightUnit();
+  const hu = getHeightUnit();
 
   try {
     const participants = await getAllParticipants();
@@ -1148,8 +1291,8 @@ async function renderAdminPanel() {
       tr.style.borderBottom = '1px solid var(--orange-100)';
       tr.innerHTML = `
         <td style="padding:0.5rem 0;font-weight:700;font-size:0.85rem;">${p.nickname}</td>
-        <td style="padding:0.5rem 0;font-size:0.78rem;color:var(--stone-400)">${CALC.formatHeight(p.height_cm, up)} · ${p.age}a</td>
-        <td style="padding:0.5rem 0;font-size:0.8rem;">${CALC.formatWeight(p.starting_weight_lbs, up)} → ${CALC.formatWeight(currentLbs, up)}</td>
+        <td style="padding:0.5rem 0;font-size:0.78rem;color:var(--stone-400)">${CALC.formatHeight(p.height_cm, hu)} · ${p.age}a</td>
+        <td style="padding:0.5rem 0;font-size:0.8rem;">${CALC.formatWeight(p.starting_weight_lbs, wu)} → ${CALC.formatWeight(currentLbs, wu)}</td>
         <td style="padding:0.5rem 0;font-weight:700;font-size:0.85rem;color:${pctLost > 0 ? '#16a34a' : 'var(--stone-400)'}">${CALC.formatPercent(pctLost)}</td>
         <td style="padding:0.5rem 0;text-align:right"><button class="btn btn-sm btn-outline admin-edit" data-id="${p.id}" data-name="${p.nickname}">Editar</button></td>
         <td style="padding:0.5rem 0;text-align:right"><button class="btn btn-sm btn-outline admin-pw" data-id="${p.id}" data-name="${p.nickname}">Clave</button></td>
@@ -1184,16 +1327,17 @@ async function renderAdminPanel() {
         const pid = parseInt(btn.dataset.id);
         try {
           const p = await getParticipant(pid);
-          const up = getUnitPref();
+          const wu = p.weight_unit || 'kg';
+          const hu = p.height_unit || 'metric';
           $('#edit-nickname').value = p.nickname;
           $('#edit-age').value = p.age;
           document.querySelector(`input[name="edit-sex"][value="${p.sex}"]`).checked = true;
           $('#edit-height').value = (p.height_cm / 100).toFixed(2);
-          const weightMode = up === 'imperial' ? 'lbs' : 'kg';
-          document.querySelector(`input[name="edit-weight-mode"][value="${weightMode}"]`).checked = true;
-          $('#edit-weight').value = up === 'metric' ? CALC.lbsToKg(p.starting_weight_lbs).toFixed(1) : p.starting_weight_lbs.toFixed(1);
+          document.querySelector(`input[name="edit-weight-mode"][value="${wu}"]`).checked = true;
+          $('#edit-weight').value = wu === 'kg' ? CALC.lbsToKg(p.starting_weight_lbs).toFixed(1) : p.starting_weight_lbs.toFixed(1);
           $('#edit-activity').value = p.activity_level;
-          document.querySelector(`input[name="edit-unit-pref"][value="${p.unit_preference}"]`).checked = true;
+          document.querySelector(`input[name="edit-wt-unit"][value="${wu}"]`).checked = true;
+          document.querySelector(`input[name="edit-ht-unit"][value="${hu}"]`).checked = true;
           $('#admin-edit-modal').dataset.pid = pid;
           $('#admin-edit-title').textContent = `Editar · ${p.nickname}`;
           $('#admin-edit-modal').classList.remove('hidden');
@@ -1222,7 +1366,8 @@ async function handleAdminCreateParticipant(e) {
   const weightVal = parseFloat($('#admin-weight').value);
   const startingWeightLbs = weightMode === 'kg' ? CALC.kgToLbs(weightVal) : weightVal;
   const activityLevel = $('#admin-activity').value;
-  const unitPref = document.querySelector('input[name="admin-unit-pref"]:checked').value;
+  const wtUnit = document.querySelector('input[name="admin-wt-unit"]:checked').value;
+  const htUnit = document.querySelector('input[name="admin-ht-unit"]:checked').value;
 
   if (!nickname || !password || !age || !sex || !heightCm || !weightVal || !activityLevel) {
     showToast('Completa todos', 'error'); return;
@@ -1231,7 +1376,7 @@ async function handleAdminCreateParticipant(e) {
   const btn = $('#admin-create-btn');
   btn.disabled = true; btn.textContent = 'Creando...';
   try {
-    await createParticipant({ nickname, password, age, sex: sex.value, heightCm, activityLevel, startingWeightLbs, unitPreference: unitPref });
+    await createParticipant({ nickname, password, age, sex: sex.value, heightCm, activityLevel, startingWeightLbs, unitPreference: wtUnit === 'kg' && htUnit === 'metric' ? 'metric' : 'imperial', weightUnit: wtUnit, heightUnit: htUnit });
     showToast(`${nickname} creado`, 'success');
     $('#admin-nickname').value = ''; $('#admin-password').value = ''; $('#admin-age').value = ''; $('#admin-weight').value = '';
     switchAdminView('participants');
@@ -1248,30 +1393,37 @@ function getAvatar(nickname) {
   return `<span class="avatar-init">${nickname.charAt(0).toUpperCase()}</span>`;
 }
 
-function updateUnitToggle() {
-  const btn = $('#unit-toggle');
-  if (!btn) return;
-  const isMetric = state.activeUnitPref === 'metric';
-  btn.textContent = isMetric ? 'kg' : 'lbs';
-  btn.title = isMetric ? 'Cambiar a imperial (lbs)' : 'Cambiar a métrico (kg)';
-  btn.style.borderColor = isMetric ? '#22c55e' : '#f97316';
-  btn.style.color = isMetric ? '#22c55e' : '#f97316';
+function updateToggles() {
+  const wt = $('#wt-toggle');
+  if (wt) {
+    wt.textContent = state.weightUnit;
+    const isKg = state.weightUnit === 'kg';
+    wt.title = isKg ? 'Cambiar a libras' : 'Cambiar a kilogramos';
+    wt.style.borderColor = isKg ? '#22c55e' : '#f97316';
+    wt.style.color = isKg ? '#22c55e' : '#f97316';
+  }
+  const ht = $('#ht-toggle');
+  if (ht) {
+    ht.textContent = state.heightUnit === 'metric' ? 'cm' : 'in';
+    const isCm = state.heightUnit === 'metric';
+    ht.title = isCm ? 'Cambiar a inches' : 'Cambiar a centímetros';
+    ht.style.borderColor = isCm ? '#22c55e' : '#f97316';
+    ht.style.color = isCm ? '#22c55e' : '#f97316';
+  }
 }
 
-async function handleUnitToggle() {
-  state.activeUnitPref = state.activeUnitPref === 'metric' ? 'imperial' : 'metric';
+async function handleWeightToggle() {
+  state.weightUnit = state.weightUnit === 'kg' ? 'lbs' : 'kg';
   saveSession();
-  updateUnitToggle();
+  updateToggles();
 
-  // Persist preference to DB for participants (survives logout)
   if (state.userType === 'participant' && state.user) {
     try {
-      await updateParticipant(state.user.id, { unit_preference: state.activeUnitPref });
-      state.user.unit_preference = state.activeUnitPref;
+      await updateParticipant(state.user.id, { weight_unit: state.weightUnit });
+      state.user.weight_unit = state.weightUnit;
     } catch (_) {}
   }
 
-  // Destroy charts so they re-render with new units
   Object.values(state.chartInstances).forEach(c => { try { c.destroy(); } catch(_) {} });
   state.chartInstances = {};
 
@@ -1285,8 +1437,36 @@ async function handleUnitToggle() {
   else if (view === 'admin') { switchAdminView('participants'); await renderAdminPanel(); }
   await updateReportBanner();
 
-  const label = state.activeUnitPref === 'metric' ? 'métrico' : 'imperial';
-  showToast(`Cambiado a sistema ${label}`, 'info');
+  showToast(`Peso en ${state.weightUnit}`, 'info');
+}
+
+async function handleHeightToggle() {
+  state.heightUnit = state.heightUnit === 'metric' ? 'imperial' : 'metric';
+  saveSession();
+  updateToggles();
+
+  if (state.userType === 'participant' && state.user) {
+    try {
+      await updateParticipant(state.user.id, { height_unit: state.heightUnit });
+      state.user.height_unit = state.heightUnit;
+    } catch (_) {}
+  }
+
+  Object.values(state.chartInstances).forEach(c => { try { c.destroy(); } catch(_) {} });
+  state.chartInstances = {};
+
+  const view = state.currentView;
+  if (view === 'home') await renderHome();
+  else if (view === 'leaderboard') await renderLeaderboard();
+  else if (view === 'rules') renderRules();
+  else if (view === 'stats') renderStats();
+  else if (view === 'checkin') await renderCheckin();
+  else if (view === 'info') await renderInfo();
+  else if (view === 'admin') { switchAdminView('participants'); await renderAdminPanel(); }
+  await updateReportBanner();
+
+  const label = state.heightUnit === 'metric' ? 'cm' : 'ft/in';
+  showToast(`Altura en ${label}`, 'info');
 }
 
 function initAuthTabs() {
@@ -1313,6 +1493,8 @@ function initAuthTabs() {
 document.addEventListener('DOMContentLoaded', () => {
   initAuthTabs();
   initEntryEditModal();
+  $('#participant-modal-close')?.addEventListener('click', closeParticipantStats);
+  $('#participant-modal')?.addEventListener('click', (e) => { if (e.target === e.currentTarget) closeParticipantStats(); });
 
   // Forms
   $('#setup-form')?.addEventListener('submit', handleAdminSetup);
@@ -1320,7 +1502,8 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#checkin-form')?.addEventListener('submit', handleCheckIn);
   $('#admin-create-form')?.addEventListener('submit', handleAdminCreateParticipant);
   $('#btn-logout')?.addEventListener('click', handleLogout);
-  $('#unit-toggle')?.addEventListener('click', handleUnitToggle);
+  $('#wt-toggle')?.addEventListener('click', handleWeightToggle);
+  $('#ht-toggle')?.addEventListener('click', handleHeightToggle);
   $('#home-go-ranking')?.addEventListener('click', async () => { showView('leaderboard'); await renderLeaderboard(); await updateReportBanner(); });
   $('#report-banner-btn')?.addEventListener('click', () => { showView('checkin'); renderCheckin(); });
   $('#admin-go-dashboard')?.addEventListener('click', () => handleLogout());
@@ -1348,14 +1531,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const weightVal = parseFloat($('#edit-weight').value);
     const startingWeightLbs = weightMode === 'kg' ? CALC.kgToLbs(weightVal) : weightVal;
     const activityLevel = $('#edit-activity').value;
-    const unitPref = document.querySelector('input[name="edit-unit-pref"]:checked').value;
+    const editWu = document.querySelector('input[name="edit-wt-unit"]:checked').value;
+    const editHu = document.querySelector('input[name="edit-ht-unit"]:checked').value;
     if (!nickname || !age || !sex || !heightCm || !weightVal || !activityLevel) {
       showToast('Completa todos', 'error'); return;
     }
     const btn = $('#admin-edit-save');
     btn.disabled = true; btn.textContent = 'Guardando...';
     try {
-      await updateParticipant(pid, { nickname, age, sex, height_cm: heightCm, starting_weight_lbs: startingWeightLbs, activity_level: activityLevel, unit_preference: unitPref });
+      await updateParticipant(pid, { nickname, age, sex, height_cm: heightCm, starting_weight_lbs: startingWeightLbs, activity_level: activityLevel, unit_preference: editWu === 'kg' && editHu === 'metric' ? 'metric' : 'imperial', weight_unit: editWu, height_unit: editHu });
       showToast(`${nickname} actualizado`, 'success');
       $('#admin-edit-modal').classList.add('hidden');
       await renderAdminPanel();
@@ -1412,7 +1596,7 @@ document.addEventListener('DOMContentLoaded', () => {
       switchAdminView('participants');
       renderAdminPanel();
     } else {
-      updateUnitToggle();
+      updateToggles();
       showView('home');
       renderHome();
     }

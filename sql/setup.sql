@@ -26,6 +26,8 @@ CREATE TABLE participants (
   activity_level TEXT NOT NULL CHECK (activity_level IN ('sedentary', 'light', 'moderate', 'heavy', 'very_heavy')),
   starting_weight_lbs DECIMAL(5,1) NOT NULL,
   unit_preference TEXT NOT NULL DEFAULT 'metric' CHECK (unit_preference IN ('metric', 'imperial')),
+  weight_unit TEXT NOT NULL DEFAULT 'kg' CHECK (weight_unit IN ('kg', 'lbs')),
+  height_unit TEXT NOT NULL DEFAULT 'metric' CHECK (height_unit IN ('metric', 'imperial')),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -65,3 +67,7 @@ CREATE POLICY "Allow all weight_entries" ON weight_entries FOR ALL USING (true) 
 -- ALTER TABLE weight_entries ADD COLUMN IF NOT EXISTS waist_cm DECIMAL(5,1);
 -- ALTER TABLE weight_entries ADD COLUMN IF NOT EXISTS body_fat_pct DECIMAL(4,1);
 -- ALTER TABLE weight_entries ADD COLUMN IF NOT EXISTS activities TEXT;
+
+-- ═══ Migration v4 (peso/altura por separado) ═══
+-- ALTER TABLE participants ADD COLUMN IF NOT EXISTS weight_unit TEXT NOT NULL DEFAULT 'kg' CHECK (weight_unit IN ('kg', 'lbs'));
+-- ALTER TABLE participants ADD COLUMN IF NOT EXISTS height_unit TEXT NOT NULL DEFAULT 'metric' CHECK (height_unit IN ('metric', 'imperial'));

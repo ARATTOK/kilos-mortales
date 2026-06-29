@@ -79,7 +79,9 @@ async function createParticipant(data) {
     age: data.age,
     activity_level: data.activityLevel,
     starting_weight_lbs: data.startingWeightLbs,
-    unit_preference: data.unitPreference || 'metric'
+    unit_preference: data.unitPreference || 'metric',
+    weight_unit: data.weightUnit || 'kg',
+    height_unit: data.heightUnit || 'metric'
   };
   const { data: result, error } = await getSupabase()
     .from('participants')
@@ -150,6 +152,8 @@ async function updateParticipant(id, data) {
   if (data.activity_level !== undefined) payload.activity_level = data.activity_level;
   if (data.starting_weight_lbs !== undefined) payload.starting_weight_lbs = data.starting_weight_lbs;
   if (data.unit_preference !== undefined) payload.unit_preference = data.unit_preference;
+  if (data.weight_unit !== undefined) payload.weight_unit = data.weight_unit;
+  if (data.height_unit !== undefined) payload.height_unit = data.height_unit;
   const { error } = await getSupabase()
     .from('participants')
     .update(payload)
@@ -288,7 +292,9 @@ async function getLeaderboardData() {
       sex: p.sex,
       heightCm: p.height_cm,
       age: p.age,
-      unitPreference: p.unit_preference
+      unitPreference: p.unit_preference,
+      weightUnit: p.weight_unit || 'kg',
+      heightUnit: p.height_unit || 'metric'
     });
   }
 
